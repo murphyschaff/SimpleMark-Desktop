@@ -5,7 +5,8 @@ Defines the List and Mark Classes, the strucutre of the linked lists
 
 class List:
 
-    def __init__(self, head):
+    def __init__(self, name, head):
+        self.name = name
         self.head = head 
         self.length = 1
 
@@ -38,6 +39,14 @@ class List:
                 #more than one item in the list
                 current = self.head
                 run = True
+                #checks the head value and replaces it if it is replaced
+                if self.head.getDeadline() >= newMark.getDeadline():
+                    tmp = self.head
+                    tmp.setPrevious(newMark)
+                    self.head = newMark
+                    self.head.setNext(tmp)
+                    run = False
+                #If the head value is not the one replaced
                 while run:
                     current = current.getNext()
                     #if new should go in front of current, closer deadline
@@ -113,6 +122,14 @@ class List:
     #Returns length of list     
     def getLength(self):
         return self.length
+
+    #Returns the Mark value to the head of the list
+    def getHead(self):
+        return self.head
+
+    #Returns name of list
+    def getName(self):
+        return self.name
 
 
 
