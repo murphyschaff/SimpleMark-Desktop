@@ -2,7 +2,6 @@ import os
 import re
 from listmarkclass import *
 
-print(os.getcwd())
 
 '''
 Saves List to ListData file
@@ -107,7 +106,6 @@ def openConfig():
         return data
     else:
         #if config file does not exist, errors out
-        print("Error opening file.")
         return None
 
 '''
@@ -117,17 +115,17 @@ configData: List that contains all options in the config file
 def saveConfig(configData):
 
     cwd = os.getcwd()
-    directory = cwd + "\\config\\config.txt"
+    directory = cwd + "\\config"
 
-    if os.path.exists(directory) and os.path.isfile(directory):
-        config = open(directory, 'w')
+    if not os.path.exists(directory):
+        os.mkdir(directory)
 
-        #Previous list
-        listPath = configData[0]
-        config.write("Previous List: {}".format(listPath))
-    else:
-        #if config directory does not exist
-        print("directory not found. Cannot save config file")
+    config = open(directory + "\\config.txt", 'w')
+
+    #Previous list
+    listPath = configData[0]
+    config.write("Previous List: {}".format(listPath))
+
 
 
 
