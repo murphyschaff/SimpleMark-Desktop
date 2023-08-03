@@ -80,11 +80,54 @@ def openList(path):
             newMark = Mark(markName, markDetails, markDeadline, markPrio, markColor)
 
             list.add(newMark)
-
+        file.close()
         return list
 
 
+'''
+Opens and reads information from the config file, converts information into an array
+Returns: Array with config information or None if not found
+'''
+def openConfig():
+    cwd = os.getcwd()
+    directory = cwd + "\\config\\config.txt"
 
+    if os.path.exists(directory) and os.path.isfile(directory):
+        data = ['','']
+        config = open(directory, 'r')
+
+        #previous list
+        listRegex = re.compile(r'Previous List: (\S+)')
+        line = config.readline()
+        previousList = listRegex.search(line)
+
+        data[0] = previousList.group(1)
+
+        config.close()
+        return data
+    else:
+        #if config file does not exist, errors out
+        print("Error opening file.")
+        return None
+
+'''
+Saves configuation data to config file
+configData: List that contains all options in the config file
+'''
+def saveConfig(configData):
+
+    cwd = os.getcwd()
+    directory = cwd + "\\config\\config.txt"
+
+    if os.path.exists(directory) and os.path.isfile(directory):
+        config = open(directory, 'w')
+
+        #Previous list
+        listPath = configData[0]
+        config.write("Previous List: {}".format(listPath))
+    else:
+        #if config directory does not exist
+        print("directory not found. Cannot save config file")
 
 
 

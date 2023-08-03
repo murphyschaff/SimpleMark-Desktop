@@ -103,7 +103,7 @@ class List:
             
                     
     '''
-    Lists all marks within the list
+    Lists all marks within the list (testing purposes)
     '''
     def list(self):
         if self.length > 0:

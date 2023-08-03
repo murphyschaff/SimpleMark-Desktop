@@ -33,6 +33,10 @@ path = 'C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListDat
 newList = openList(path)
 newList.list()
 
+configData = [path, "hi"]
+saveConfig(configData)
+configData = openConfig()
+print(configData)
 
 
 '''
