@@ -1,11 +1,19 @@
 from listmarkclass import *
 from files import *
+import time
+from windowstoast import Toast
+from notifications import *
 
-mark1 = Mark("Mark1", "test", 16, 1, "blue")
-mark2 = Mark("Mark2", "test", 12, 2, "blue")
-mark3 = Mark("Mark3", "test", 14, 3, "blue")
-mark4 = Mark("Mark4", "test", 13, 4, "blue")
-mark5 = Mark("Mark5", "test", 10, 5, "blue")
+mark1 = Mark("Mark1", "test", time.ctime(), 1, "blue")
+time.sleep(1)
+mark2 = Mark("Mark2", "test", time.ctime(), 2, "blue")
+time.sleep(1)
+mark3 = Mark("Mark3", "test", time.ctime(), 3, "blue")
+time.sleep(1)
+mark4 = Mark("Mark4", "test", time.ctime(), 4, "blue")
+time.sleep(1)
+mark5 = Mark("Mark5", "test", time.ctime(), 5, "blue")
+time.sleep(1)
 
 list = List("bob", mark1)
 list.add(mark2)
@@ -33,18 +41,28 @@ path = 'C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListDat
 newList = openList(path)
 newList.list()
 
-configData = [path, "hi"]
+configData = [path, 2]
 saveConfig(configData)
 configData = openConfig()
 print(configData)
 
 
+runNotif(list, list.getLength())
+'''
+notif = Toast("SimpleMark", "Mark", ActivationType="protocol", Duration="long")
+cwd = os.getcwd()
+logo = cwd + "/logo.png"
+notif.add_image("logo", placement="logo", hint_crop='circle')
+notif.add_text("Test")
+notif.show()
+'''
 '''
 mark1 = Mark("Mark1", "test", 12, 3, "blue")
 mark2 = Mark("Mark2", "test", 13, 3, "blue")
 mark3 = Mark("Mark3", "test", 14, 3, "blue")
 mark4 = Mark("Mark4", "test", 15, 3, "blue")
 mark5 = Mark("Mark5", "test", 16, 3, "blue")
+notif.show()print("reach1")
 
 
 list = List("bob", mark1)

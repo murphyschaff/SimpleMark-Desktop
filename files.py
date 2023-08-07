@@ -92,7 +92,7 @@ def openConfig():
     directory = cwd + "\\config\\config.txt"
 
     if os.path.exists(directory) and os.path.isfile(directory):
-        data = ['','']
+        data = ['','','']
         config = open(directory, 'r')
 
         #previous list
@@ -101,6 +101,13 @@ def openConfig():
         previousList = listRegex.search(line)
 
         data[0] = previousList.group(1)
+
+        # notification number
+        notifRegex = re.compile(r'Number of Notifs: (\d+)')
+        line = config.readline()
+        notifNum = notifRegex.search(line)
+
+        data[1] = notifNum.group(1)
 
         config.close()
         return data
@@ -124,7 +131,13 @@ def saveConfig(configData):
 
     #Previous list
     listPath = configData[0]
-    config.write("Previous List: {}".format(listPath))
+    config.write("Previous List: {}\n".format(listPath))
+
+    #Notification number
+    notifNum = configData[1]
+    config.write("Number of Notifs: {}".format(notifNum))
+
+    config.close()
 
 
 
