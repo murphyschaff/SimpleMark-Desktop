@@ -4,15 +4,15 @@ import time
 from windowstoast import Toast
 from notifications import *
 
-mark1 = Mark("Mark1", "test", time.ctime(), 1, "blue")
+mark1 = Mark("Mark1", "test", time.time(), 1, "blue")
 time.sleep(1)
-mark2 = Mark("Mark2", "test", time.ctime(), 2, "blue")
+mark2 = Mark("Mark2", "test", time.time(), 2, "blue")
 time.sleep(1)
-mark3 = Mark("Mark3", "test", time.ctime(), 3, "blue")
+mark3 = Mark("Mark3", "test", time.time(), 3, "blue")
 time.sleep(1)
-mark4 = Mark("Mark4", "test", time.ctime(), 4, "blue")
+mark4 = Mark("Mark4", "test", time.time(), 4, "blue")
 time.sleep(1)
-mark5 = Mark("Mark5", "test", time.ctime(), 5, "blue")
+mark5 = Mark("Mark5", "test", time.time(), 5, "blue")
 time.sleep(1)
 
 list = List("bob", mark1)
@@ -25,6 +25,12 @@ list.add(mark4)
 
 list.add(mark5)
 list.list()
+
+'''
+list = openList('C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListData\\bob.txt')
+list.list()
+print(list.getHead().getDeadline())
+'''
 '''
 list.remove(mark5)
 list.remove(mark1)
@@ -35,19 +41,25 @@ list.remove(mark5)
 list.list()
 print("ran")
 '''
+
+
 #print(list.getHead().getName())
 saveList(list.getHead(), list.getName(), list.getLength())
 path = 'C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListData\\bob.txt'
 newList = openList(path)
 newList.list()
 
-configData = [path, 2]
+configData = ['US/Mountain', path, 900, 1800, 3600, 5400, 7200]
 saveConfig(configData)
 configData = openConfig()
 print(configData)
 
+notifTimes = [configData[2], configData[3], configData[4], configData[5], configData[6]]
+runNotif(list, list.getLength(), configData[0], notifTimes)
 
-runNotif(list, list.getLength())
+
+
+
 '''
 notif = Toast("SimpleMark", "Mark", ActivationType="protocol", Duration="long")
 cwd = os.getcwd()

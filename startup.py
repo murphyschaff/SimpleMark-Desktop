@@ -2,6 +2,7 @@ import os
 import tkinter.messagebox
 from listmarkclass import *
 from files import *
+from notifications import *
 
 
 '''
@@ -16,7 +17,12 @@ configData = openConfig()
 
 if configData != None:
     #open previously known list
-    list = openList(configData[0])
+    list = openList(configData[1])
+
+    notifTimes = [configData[2], configData[3], configData[4], configData[5], configData[6]]
+    print(configData[0])
+
+    runNotif(list, list.getLength(), configData[0], notifTimes)
 
     list.list()
 else:

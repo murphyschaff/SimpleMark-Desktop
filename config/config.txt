@@ -1,2 +1,7 @@
+TimeZone: US/Mountain
 Previous List: C:\Users\bluej\OneDrive\Documents\SimpleMark\SimpleMarkv1\ListData\bob.txt
-Number of Notifs: 2
+Notif for prio 1: 900
+Notif for prio 2: 1800
+Notif for prio 3: 3600
+Notif for prio 4: 5400
+Notif for prio 5: 7200
