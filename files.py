@@ -5,21 +5,22 @@ from listmarkclass import *
 
 '''
 Saves List to ListData file
-listHead: Mark object head of list
-name: string object of name of list
-length: integer value of the length of the list
+
+list: list object to be saved to file
 '''
-def saveList(listHead, name, length):
+def saveList(list):
+    name = list.getName()
+    length = list.getLength()
     cwd = os.getcwd()
     directory = cwd + "\\ListData"
 
     if not os.path.exists(directory):
         os.mkdir(cwd + "\\ListData")
 
-    file = open(directory + "\\" + name + ".txt", 'w')
+    file = open(directory + "\\" + list.getName() + ".txt", 'w')
     #initial list information
     file.write("{}\n{}\n".format(name, length))
-    mark = listHead
+    mark = list.getHead()
 
     run = True
     while run:

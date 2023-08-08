@@ -3,7 +3,7 @@ from files import *
 import time
 from windowstoast import Toast
 from notifications import *
-
+'''
 mark1 = Mark("Mark1", "test", time.time(), 1, "blue")
 time.sleep(1)
 mark2 = Mark("Mark2", "test", time.time(), 2, "blue")
@@ -25,7 +25,7 @@ list.add(mark4)
 
 list.add(mark5)
 list.list()
-
+'''
 '''
 list = openList('C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListData\\bob.txt')
 list.list()
@@ -44,10 +44,18 @@ print("ran")
 
 
 #print(list.getHead().getName())
+'''
 saveList(list.getHead(), list.getName(), list.getLength())
 path = 'C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListData\\bob.txt'
 newList = openList(path)
 newList.list()
+'''
+
+notifTestMark = Mark("Test", "This is a test", time.time() + 3500, 3, "blue")
+newList = List("Notif list", notifTestMark)
+
+saveList(newList)
+path = 'C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListData\\Notif list.txt'
 
 configData = ['US/Mountain', path, 900, 1800, 3600, 5400, 7200]
 saveConfig(configData)
@@ -55,7 +63,7 @@ configData = openConfig()
 print(configData)
 
 notifTimes = [configData[2], configData[3], configData[4], configData[5], configData[6]]
-runNotif(list, list.getLength(), configData[0], notifTimes)
+runNotif(newList, newList.getLength(), configData[0], notifTimes)
 
 
 

@@ -1,5 +1,5 @@
 TimeZone: US/Mountain
-Previous List: C:\Users\bluej\OneDrive\Documents\SimpleMark\SimpleMarkv1\ListData\bob.txt
+Previous List: C:\Users\bluej\OneDrive\Documents\SimpleMark\SimpleMarkv1\ListData\Notif list.txt
 Notif for prio 1: 900
 Notif for prio 2: 1800
 Notif for prio 3: 3600
