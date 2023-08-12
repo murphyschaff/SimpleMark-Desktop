@@ -97,7 +97,7 @@ def openConfig():
         data[0] = timeZone.group(1)
 
         #previous list
-        listRegex = re.compile(r'Previous List: (\S+)')
+        listRegex = re.compile(r'Previous List: (.*)')
         line = config.readline()
         previousList = listRegex.search(line)
 

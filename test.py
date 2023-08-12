@@ -3,6 +3,7 @@ from files import *
 import time
 from windowstoast import Toast
 from notifications import *
+from userInterface import *
 '''
 mark1 = Mark("Mark1", "test", time.time(), 1, "blue")
 time.sleep(1)
@@ -60,10 +61,10 @@ path = 'C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListDat
 configData = ['US/Mountain', path, 900, 1800, 3600, 5400, 7200]
 saveConfig(configData)
 configData = openConfig()
-print(configData)
 
-notifTimes = [configData[2], configData[3], configData[4], configData[5], configData[6]]
-runNotif(newList, newList.getLength(), configData[0], notifTimes)
+
+#notifTimes = [configData[2], configData[3], configData[4], configData[5], configData[6]]
+#runNotif(newList, newList.getLength(), configData[0], notifTimes)
 
 
 
