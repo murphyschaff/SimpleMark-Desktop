@@ -13,33 +13,27 @@ def saveList(list):
     length = list.getLength()
     cwd = os.getcwd()
     directory = cwd + "\\ListData"
+    watermark = "SimpleMarkListType"
+    #Makes sure that the directory exists before adding file there
+    if os.path.exists(directory):
+        filePath = directory + "\\" + name + ".txt"
 
-    if not os.path.exists(directory):
-        os.mkdir(cwd + "\\ListData")
+        file = open(filePath, 'w')
 
-    file = open(directory + "\\" + list.getName() + ".txt", 'w')
-    #initial list information
-    file.write("{}\n{}\n".format(name, length))
-    mark = list.getHead()
+        file.write('{}\n{}\n{}\n'.format(watermark, name, length))
+        mark = list.getHead()
 
-    run = True
-    while run:
-        #Writes each mark to the file with string ',*,' between each entry
-        file.write("{},&,{},&,{},&,{},&,{}\n".format(
-            mark.getName(), mark.getDetails(), mark.getDeadline(),
-        mark.getPrio(), mark.getColor())
-        )
-        if mark.getNext() == None:
-            run = False
-        else:
+        for i in range(length):
+            file.write('{},&,{},&,{},&,{},&,{}\n'.format(mark.getName(), mark.getDetails(),
+                                                       mark.getDeadline(), mark.getPrio(), mark.getColor()))
             mark = mark.getNext()
 
-    file.close()
-    print("File has been saved to: " + directory)
+        file.close()
+        print("File saved to: {}".format(filePath))
 
 '''
 Opens list at specified path
-Returns: List object holding list data from loaded file
+Returns: List object holding list data from loaded file, none if not valid list
 path: string location of path
 '''
 def openList(path):
@@ -47,34 +41,60 @@ def openList(path):
     if os.path.exists(path) and os.path.isfile(path):
         file = open(path, 'r')
 
-        listName = file.readline()
-        length = int(file.readline())
+        watermark = file.readline()
+        watermark = watermark.strip()
+        check = "SimpleMarkListType"
 
-        regex = re.compile(r'\w+')
-        timeRegex = re.compile(r'[0-9]+\.[0-9]+')
-        # getting mark data for the list
-        for i in range(length):
-            data = file.readline()
-            output = regex.findall(data)
-            timeOutput = timeRegex.search(data)
+        #Makes sure the object is actually a simple mark list
+        if watermark == check:
+            listName = file.readline()
+            listName = listName.strip()
+            #finds length and defines regex to read from file
+            length = int(file.readline())
+            print(length)
+            regex = re.compile(r'\w+')
+            deadlineRegex = re.compile(r'\d+\.\d+')
+            line = file.readline()
+            #Finds the information for the first mark in the list, to create the list object
+            information = regex.findall(line)
+            deadlineSearch = deadlineRegex.findall(line)
 
-            markName = output[0]
-            markDetails = output[1]
-            #reads deadline values as floating point numbers
-            markDeadline = float(timeOutput.group(0))
-            markPrio = output[3]
-            markColor = output[4]
+            name = information[0]
+            details = information[1]
+            deadline = float(deadlineSearch[0])
+            prio = information[4]
+            color = information[5]
 
-            #If first mark, creates the list object and adds the first mark as the head of list
-            if i == 0:
-                headMark = Mark(markName, markDetails, markDeadline, markPrio, markColor)
-                list = List(listName, headMark)
-            else:
-                #Otherwise adds the other marks to the list
-                newMark = Mark(markName, markDetails, markDeadline, markPrio, markColor)
+            headMark = Mark(name, details, deadline, prio, color)
+
+            list = List(listName, headMark)
+
+            #Adds the rest of the marks in the list
+            for i in range(length - 1):
+                line = file.readline()
+                information = regex.findall(line)
+                deadline = deadlineRegex.findall(line)
+
+                name = information[0]
+                details = information[1]
+                deadline = float(deadlineSearch[0])
+                prio = information[4]
+                color = information[5]
+
+                newMark = Mark(name, details, deadline, prio, color)
+
                 list.add(newMark)
-        file.close()
-        return list
+
+            file.close()
+            return list
+
+        else:
+            return None
+    else:
+        return None
+
+
+
 
 
 '''

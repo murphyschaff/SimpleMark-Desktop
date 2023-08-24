@@ -9,74 +9,137 @@ import tkinter as tk
 
 Created by Murphy Schaff
 '''
-
 '''
-PAGES
+BUTTON FUNCTIONS
 '''
-def listPage():
+def addList(window, file, listFrame):
+    #Checks if file opened is a file and is a simple mark file
+    if os.path.exists(file) and os.path.isfile(file):
+        list = openList(file)
+        if list is not None:
+            print("Opened list from: {}".format(file))
+            name = list.getName()
+            window.title("SimpleMark: {}".format(name))
 
-    destination = openEntry.get()
-    #checking if the list exists
-    if os.path.exists(destination) and os.path.isfile(destination):
-        list = openList(destination)
-        listWindow = tk.Tk()
-        listWindow.title('SimpleMark List:{}'.format(list.getName()))
+            listString = ""
+            mark = list.getHead()
+            #clears any previous data from the list
+            clearFrame(listFrame)
+            #lists every item in the list
 
-        listButtonFrame = tk.Frame(master=listWindow)
-        listButtonFrame.pack()
-        listButtonAdd = tk.Button(
-            master=listButtonFrame,
-            text="Add Item",
-            command=addItem
-        )
-        listButtonAdd.pack()
-        listButtonRemoveList = tk.Button(
-            master=listButtonFrame,
-            text="Delete List",
-            command=removeList(list)
-        )
-        listButtonRemoveList.pack()
+            for i in range(list.getLength()):
+                listString = listString + mark.getName() + ": \n"
+                mark = mark.getNext()
 
-        items = list.getLength()
-        mark = list.getHead()
+            listLabel = tk.Label(
+                master=listFrame,
+                text=listString,
+                width=30
+            )
+            listLabel.pack()
 
-        for i in range(items):
-            markFrame = tk.Frame(master=listWindow)
+            '''
+            List Attribute Buttons
+            '''
+            addItemButton = tk.Button(
+                master=listFrame,
+                text="Add Item",
+                width=20,
+                height=1,
+                bg="black",
+                fg='white',
+                command=lambda: addItem()
+            )
 
-            markName = tk.Label(master=markFrame,text="{}".format(mark.getName()))
-            markName.pack()
+            removeItemButton = tk.Button(
+                master=listFrame,
+                text="Remove Item",
+                width=20,
+                height=1,
+                bg="black",
+                fg='white',
+                command=lambda: removeItem()
+            )
 
-            markDeadline = tk.Label(master=markFrame, text="{}".format(mark.getDeadline()))
-            markDeadline.pack()
+            removeListButton = tk.Button(
+                master=listFrame,
+                text="Delete List",
+                width=20,
+                height=1,
+                bg="black",
+                fg='white',
+                command=lambda: removeList(list)
+            )
+            editMarkButton = tk.Button(
+                master=listFrame,
+                text="Edit Mark Information",
+                width=20,
+                height=1,
+                bg="black",
+                fg='white',
+                command=lambda: editMark(markEntry.get())
+            )
+            #Information Text Box
+            markEntryLabel = tk.Label(master=listFrame, text="Add name of object to edit/delete")
+            markEntry = tk.Entry(
+                master=listFrame,
+                width=50
+            )
+            #packing all other buttons and lables
+            markEntryLabel.pack()
+            markEntry.pack()
+            addItemButton.pack()
+            removeItemButton.pack()
+            editMarkButton.pack()
+            removeListButton.pack()
 
-            mark = mark.getNext()
 
-        listWindow.mainloop()
+        else:
+            tkinter.messagebox.showerror(title="SimpleMark",
+                                         message="Not a Simple Mark List File. Please open a Simple Mark List.")
     else:
-        tkinter.messagebox.showerror(title="SimpleMark", message="File at destination does not exist")
+        tkinter.messagebox.showerror(title="SimpleMark", message="Please open a valid file.")
+
+'''
+Clears the frame that is sent to the function of objects
+frame: tk frame to have objects removed
+'''
+def clearFrame(frame):
+    for widget in frame.winfo_children():
+        widget.destroy()
+        print("object destroyed")
 
 '''
 creates window to add item to the list
 '''
 def addItem():
-    print("ran")
+    print("add ran")
 
-
+'''
+removes item from list
+'''
+def removeItem():
+    print("remove ran")
 '''
 deletes list
 '''
 def removeList(list):
 
-    print("also ran")
+    print("remove list ran")
 
+
+'''
+Allows for edits to be made to each mark
+'''
+def editMark(entry):
+    print(entry)
 
 
 '''
 main
 '''
 configData = openConfig()
-
-
+list = ""
 if configData != None:
     #open previously known list
     list = openList(configData[1])
@@ -96,7 +159,7 @@ window.title("SimpleMark")
 greeting = tk.Label(
     text="Welcome to SimpleMark",
     width=30,
-    height=10
+    height=5
 )
 greeting.pack()
 
@@ -112,6 +175,8 @@ path = str(configData[1])
 openEntry.insert(index=0, string=path)
 openEntry.pack()
 
+listFrame = tk.Frame()
+
 openButton = tk.Button(
     master=openFrame,
     text="Open List",
@@ -119,11 +184,9 @@ openButton = tk.Button(
     height=1,
     bg="black",
     fg='white',
-    command=listPage
+    command=lambda: addList(window, openEntry.get(), listFrame)
 )
+
 openButton.pack()
-
+listFrame.pack()
 window.mainloop()
-
-
-
