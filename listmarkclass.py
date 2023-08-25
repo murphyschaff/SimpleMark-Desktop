@@ -98,8 +98,30 @@ class List:
                             next.setPrevious(previous)
         else:
             self.head = None
-            
 
+    '''
+    Finds a mark in the list based off the name
+    Returns: Mark object of the mark in question, None if not found
+    name: String name of the mark to be found
+    '''
+    def findMark(self, name):
+        mark = self.head
+        markReturn = ''
+        markFound = False
+        doContinue = True
+        while markFound is False and doContinue:
+            if mark.getName() == name:
+                markReturn = mark
+                markFound = True
+            if mark.getNext() == None:
+                doContinue = False
+            else:
+                mark = mark.getNext()
+
+        if markFound:
+            return markReturn
+        else:
+            return None
             
                     
     '''
@@ -112,7 +134,7 @@ class List:
             if mark.getNext() != None:
                 mark = mark.getNext()
                 while mark.getNext() != None:
-                    #for now just lists all names within the list
+                    #prints each item in the list
                     print(mark.getName())
                     mark = mark.getNext()
                 print(mark.getName())
