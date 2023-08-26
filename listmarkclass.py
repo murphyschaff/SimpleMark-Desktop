@@ -16,6 +16,7 @@ class List:
     '''
     def add(self, newMark):
         #checking for same name first
+        print('hi')
         mark = self.head
         doPass = True
         while mark.getNext() != None:
@@ -25,7 +26,7 @@ class List:
                 doPass = False
             mark = mark.getNext()
                 
-        if doPass == True:        
+        if doPass == True:
             if self.length == 1:
                 #one item in the list currently
                 if self.head.getDeadline() >= newMark.getDeadline():
@@ -65,12 +66,10 @@ class List:
                             current.setNext(newMark)
                             newMark.setPrevious(current)
                         #otherwise iterate again.
-                        
-                        
-                
-        
-        self.length = self.length + 1
-
+            self.length = self.length + 1
+            return doPass
+        else:
+            return doPass
 
     '''
     Removes mark with certain name from list

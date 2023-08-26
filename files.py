@@ -5,7 +5,7 @@ from listmarkclass import *
 
 '''
 Saves List to ListData file
-
+Returns: File path of location saved to
 list: list object to be saved to file
 '''
 def saveList(list):
@@ -30,6 +30,7 @@ def saveList(list):
 
         file.close()
         print("File saved to: {}".format(filePath))
+        return filePath
 
 '''
 Opens list at specified path
@@ -51,7 +52,6 @@ def openList(path):
             listName = listName.strip()
             #finds length and defines regex to read from file
             length = int(file.readline())
-            print(length)
             regex = re.compile(r'\w+')
             deadlineRegex = re.compile(r'\d+\.\d+')
             line = file.readline()
