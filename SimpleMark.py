@@ -5,6 +5,8 @@ from files import *
 from notifications import *
 import tkinter as tk
 from tkinter import *
+import time
+import threading
 
 '''
 ~~~~~SIMPLEMARK v1~~~~~
@@ -185,6 +187,7 @@ def editConfig(configData, window, mainFrame):
     notif3Label = tk.Label(master=configFrame, text="Notification Time for Priority 3 (seconds)")
     notif4Label = tk.Label(master=configFrame, text="Notification Time for Priority 4 (seconds)")
     notif5Label = tk.Label(master=configFrame, text="Notification Time for Priority 5 (seconds)")
+    remindLabel = tk.Label(master=configFrame, text="Time between reminder check (seconds)")
 
     #Entry creation
     timezoneEntry = tk.Entry(master=configFrame, width=20)
@@ -194,6 +197,19 @@ def editConfig(configData, window, mainFrame):
     notif4Entry = tk.Entry(master=configFrame, width=10)
     notif5Entry = tk.Entry(master=configFrame, width=10)
 
+    #remind time options
+    options = [1,5,10]
+    dropType = IntVar()
+    prevRemindChoice = configData[7]
+    if prevRemindChoice == options[0]:
+        dropType.set(options[0])
+    elif prevRemindChoice == options[1]:
+        dropType.set(options[1])
+    else:
+        dropType.set(options[2])
+
+    remindOption = OptionMenu(configFrame, dropType, *options)
+
     #Buttons
     saveConfigButton = tk.Button(
         master=configFrame,
@@ -202,7 +218,7 @@ def editConfig(configData, window, mainFrame):
         height=1,
         bg="black",
         fg='white',
-        command=lambda: saveConfigData(configData, configFrame, window)
+        command=lambda: saveConfigData(configData, configFrame, window, dropType.get())
     )
 
     backHomeButton = tk.Button(
@@ -222,6 +238,7 @@ def editConfig(configData, window, mainFrame):
     notif4Entry.insert(0, configData[5])
     notif5Entry.insert(0, configData[6])
 
+
     #item packing
     configLabel.pack()
     timezoneLabel.pack()
@@ -236,6 +253,8 @@ def editConfig(configData, window, mainFrame):
     notif4Entry.pack()
     notif5Label.pack()
     notif5Entry.pack()
+    remindLabel.pack()
+    remindOption.pack()
     saveConfigButton.pack()
     backHomeButton.pack()
 
@@ -337,6 +356,9 @@ def updateList(list, window):
     editMarkButton.pack()
     removeListButton.pack()
     backButton.pack()
+
+    remindThread = threading.Thread(target=reminders, args=(list,))
+    remindThread.start()
 
 '''
 Allows for changes to be made to specific marks
@@ -583,17 +605,19 @@ Saves the config data to file and updates it
 configData: list that contains all configuration data
 configFrame: Tk frame for config page
 window: Tk object for the main window
+remindTime: Time selected between reminders
 '''
-def saveConfigData(configData, configFrame, window):
+def saveConfigData(configData, configFrame, window, remindTime):
     #data starts at index 7
     options = configFrame.winfo_children()
+    print(options)
 
-    timezone = options[7].get()
-    prio1 = options[8].get()
-    prio2 = options[9].get()
-    prio3 = options[10].get()
-    prio4 = options[11].get()
-    prio5 = options[12].get()
+    timezone = options[8].get()
+    prio1 = options[9].get()
+    prio2 = options[10].get()
+    prio3 = options[11].get()
+    prio4 = options[12].get()
+    prio5 = options[13].get()
 
     #Makes sure all entered times entered are integers
     if isint(prio1) and isint(prio2) and isint(prio3) and isint(prio4) and isint(prio5):
@@ -602,6 +626,7 @@ def saveConfigData(configData, configFrame, window):
         prio3 = int(prio3)
         prio4 = int(prio4)
         prio5 = int(prio5)
+        remindTime = int(remindTime)
 
         configData[0] = timezone
         configData[2] = prio1
@@ -609,6 +634,7 @@ def saveConfigData(configData, configFrame, window):
         configData[4] = prio3
         configData[5] = prio4
         configData[6] = prio5
+        configData[7] = remindTime
 
         saveConfig(configData)
 
@@ -624,6 +650,8 @@ frame: Tk frame object to be deleted
 openMain: list that checks if main needs to be opened
 '''
 def deleteFrame(frame, openMain):
+    global notifRun
+    notifRun = False
     frame.destroy()
     if openMain[0]:
         mainPage(openMain[1])
@@ -705,6 +733,44 @@ def isint(num):
         return True
     except ValueError:
         return False
+
+'''
+Runs reminders when list is open, cancels run when list is closed
+list: List object of reminders to run
+'''
+def reminders(list):
+    global notifRun
+    notifRun = True
+    checkTime = configData[7]
+    timeZone = configData[0]
+    notifTimes = [configData[2], configData[3], configData[4], configData[5], configData[6]]
+    print(notifTimes)
+    listLength = list.getLength()
+
+    #Finding if notif has already been run for each variable
+    mark = list.getHead()
+    runAlready = []
+    for i in range(listLength):
+        prio = mark.getPrio()
+        print(prio)
+        if prio == 1:
+            runAlready.extend([True, True, True, True, False])
+        elif prio == 2:
+            runAlready.extend([True, True, True, False, False])
+        elif prio == 3:
+            runAlready.extend([True, True, False, False, False])
+        elif prio == 4:
+            runAlready.extend([True, False, False, True, False])
+        else:
+            runAlready.extend([False, False, False, False, False])
+        mark = mark.getNext()
+    print(runAlready)
+    #runs while the list is open
+    while notifRun:
+        print('checking notifs')
+        runNotif(list, list.getLength(), timeZone, notifTimes, runAlready)
+        time.sleep(checkTime)
+    return
 '''
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 MAIN
@@ -720,6 +786,8 @@ if configData != None:
     mainPage(window)
 
     window.mainloop()
+    global notifRun
+    notifRun = True
 
 
 else:

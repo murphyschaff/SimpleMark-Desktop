@@ -106,7 +106,7 @@ def openConfig():
     directory = cwd + "\\config\\config.txt"
 
     if os.path.exists(directory) and os.path.isfile(directory):
-        data = ['','','','','','','']
+        data = ['','','','','','','','']
         config = open(directory, 'r')
 
         #Time Zone
@@ -129,31 +129,38 @@ def openConfig():
         line = config.readline()
         notifNum = notifRegex.search(line)
 
-        data[2] = notifNum.group(1)
+        data[2] = float(notifNum.group(1))
         #2
         notifRegex = re.compile(r'Notif for prio 2: (\d+)')
         line = config.readline()
         notifNum = notifRegex.search(line)
 
-        data[3] = notifNum.group(1)
+        data[3] = float(notifNum.group(1))
         #3
         notifRegex = re.compile(r'Notif for prio 3: (\d+)')
         line = config.readline()
         notifNum = notifRegex.search(line)
 
-        data[4] = notifNum.group(1)
+        data[4] = float(notifNum.group(1))
         #4
         notifRegex = re.compile(r'Notif for prio 4: (\d+)')
         line = config.readline()
         notifNum = notifRegex.search(line)
 
-        data[5] = notifNum.group(1)
+        data[5] = float(notifNum.group(1))
         #5
         notifRegex = re.compile(r'Notif for prio 5: (\d+)')
         line = config.readline()
         notifNum = notifRegex.search(line)
 
-        data[6] = notifNum.group(1)
+        data[6] = float(notifNum.group(1))
+
+        #Reminders time
+        remindRegex = re.compile(r'Time between reminder check: (\d+)')
+        line = config.readline()
+        remindNum = remindRegex.search(line)
+
+        data[7] = int(remindNum.group(1))
 
 
         config.close()
@@ -200,6 +207,10 @@ def saveConfig(configData):
     #5
     prioNotifTime = configData[6]
     config.write("Notif for prio 5: {}\n".format(prioNotifTime))
+
+    #Reminders time
+    remindersTime = configData[7]
+    config.write("Time between reminder check: {}\n".format(remindersTime))
 
     config.close()
 

@@ -5,3 +5,4 @@ Notif for prio 2: 1800
 Notif for prio 3: 3600
 Notif for prio 4: 5400
 Notif for prio 5: 7200
+Time between reminder check: 1
