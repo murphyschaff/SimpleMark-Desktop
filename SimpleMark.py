@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import *
 import time
 import threading
+from miscFunctions import *
 
 '''
 ~~~~~SIMPLEMARK v1~~~~~
@@ -114,20 +115,45 @@ def createList(window, mainFrame):
     markNameLabel = tk.Label(master=createFrame, text="Mark Name")
     markDetailsLabel = tk.Label(master=createFrame, text="Details")
     markDeadlineLabel = tk.Label(master=createFrame, text="Deadline")
+    markYearLabel = tk.Label(master=createFrame, text="Year")
+    markMonthLabel = tk.Label(master=createFrame, text="Month")
+    markDayLabel = tk.Label(master=createFrame, text="Day")
+    markHrLabel = tk.Label(master=createFrame, text="Hour")
+    markMinLabel = tk.Label(master=createFrame, text="Minute")
     markPrioLabel = tk.Label(master=createFrame, text="Priority")
     markColorLabel = tk.Label(master=createFrame, text="color")
 
     # creation of text boxes
     listNameBox = tk.Entry(master=createFrame, width=30)
-    nameBox = tk.Entry(master=createFrame, width=30)
     descriptionBox = tk.Entry(master=createFrame, width=30)
-    deadlineBox = tk.Entry(master=createFrame, width=30)
+    nameBox = tk.Entry(master=createFrame, width=30)
+    yearBox = tk.Entry(master=createFrame, width=30)
+    hourBox = tk.Entry(master=createFrame, width=30)
+    minBox = tk.Entry(master=createFrame, width=30)
     colorBox = tk.Entry(master=createFrame, width=30)
     # prio option menu
     options = [1, 2, 3, 4, 5]
     prioType = IntVar()
     prioType.set(1)
     prioBox = OptionMenu(createFrame, prioType, *options)
+
+    #Month, day, time type option menus
+    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+              "November", "December"]
+    days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+            30, 31]
+    hrTypeO = ["AM", "PM"]
+
+    monthType = StringVar()
+    monthType.set(months[0])
+    dayType = IntVar()
+    dayType.set(days[0])
+    hrType = StringVar()
+    hrType.set(hrTypeO[0])
+
+    monthMenu = OptionMenu(createFrame, monthType, *months)
+    dayMenu = OptionMenu(createFrame, dayType, *days)
+    hrMenu = OptionMenu(createFrame, hrType, *hrTypeO)
 
     #Button creation
     saveListButton = tk.Button(
@@ -137,7 +163,7 @@ def createList(window, mainFrame):
         height=1,
         bg="black",
         fg='white',
-        command=lambda: saveAndOpenList(window, createFrame, prioType)
+        command=lambda: saveAndOpenList(window, createFrame, prioType, monthType.get(), dayType.get(), hrType.get())
     )
 
     cancelButton = tk.Button(
@@ -158,7 +184,17 @@ def createList(window, mainFrame):
     markDetailsLabel.pack()
     descriptionBox.pack()
     markDeadlineLabel.pack()
-    deadlineBox.pack()
+    markYearLabel.pack()
+    yearBox.pack()
+    markMonthLabel.pack()
+    monthMenu.pack()
+    markDayLabel.pack()
+    dayMenu.pack()
+    markHrLabel.pack()
+    hourBox.pack()
+    markMinLabel.pack()
+    minBox.pack()
+    hrMenu.pack()
     markPrioLabel.pack()
     prioBox.pack()
     markColorLabel.pack()
@@ -282,13 +318,13 @@ def updateList(list, window):
                                                                                    mark.getPrio())
         mark = mark.getNext()
 
-    listNameLabel = tk.Label(master=listFrame, text="List: {}".format(list.getName()))
+    listNameLabel = tk.Label(master=listFrame, text="List: {}\n Mark Name: Details, Deadline, Priority".format(list.getName()))
     listNameLabel.pack()
 
     listLabel = tk.Label(
         master=listFrame,
         text=listString,
-        width=30
+        width=50
     )
     listLabel.pack()
 
@@ -357,8 +393,9 @@ def updateList(list, window):
     removeListButton.pack()
     backButton.pack()
 
-    remindThread = threading.Thread(target=reminders, args=(list,))
-    remindThread.start()
+    #Starts the notification threads to run in the background
+    #remindThread = threading.Thread(target=reminders, args=(list,))
+    #remindThread.start()
 
 '''
 Allows for changes to be made to specific marks
@@ -412,13 +449,20 @@ def editMark(searchMarkName, list, option, listFrame, window):
     nameLabel = tk.Label(master=editMarkFrame,text="Mark Name")
     descriptionLabel = tk.Label(master=editMarkFrame, text="Mark Description")
     deadlineLabel = tk.Label(master=editMarkFrame, text="Mark Deadline")
+    markYearLabel = tk.Label(master=editMarkFrame, text="Year")
+    markMonthLabel = tk.Label(master=editMarkFrame, text="Month")
+    markDayLabel = tk.Label(master=editMarkFrame, text="Day")
+    markHrLabel = tk.Label(master=editMarkFrame, text="Hour")
+    markMinLabel = tk.Label(master=editMarkFrame, text="Minute")
     prioLabel = tk.Label(master=editMarkFrame, text="Mark Priority")
     colorLabel = tk.Label(master=editMarkFrame, text="Mark Color")
 
     #creation of text boxes
     nameBox = tk.Entry(master=editMarkFrame, width=30)
     descriptionBox = tk.Entry(master=editMarkFrame, width=30)
-    deadlineBox = tk.Entry(master=editMarkFrame, width=30)
+    yearBox = tk.Entry(master=editMarkFrame, width=30)
+    hrBox = tk.Entry(master=editMarkFrame, width=30)
+    minBox = tk.Entry(master=editMarkFrame, width=30)
     colorBox = tk.Entry(master=editMarkFrame, width=30)
     #prio option menu
     options = [1,2,3,4,5]
@@ -430,13 +474,39 @@ def editMark(searchMarkName, list, option, listFrame, window):
             prioType.set(mark.getPrio())
     prioDrop = OptionMenu(editMarkFrame,prioType, *options)
 
+    #Month, day, and 12hr option menus
+    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+              "November", "December"]
+    days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+            30, 31]
+    hrTypeO = ["AM", "PM"]
+
+    monthType = StringVar()
+    monthType.set(months[0])
+    dayType = IntVar()
+    dayType.set(days[0])
+    hrType = StringVar()
+    hrType.set(hrTypeO[0])
+
+    monthMenu = OptionMenu(editMarkFrame, monthType, *months)
+    dayMenu = OptionMenu(editMarkFrame, dayType, *days)
+    hrMenu = OptionMenu(editMarkFrame, hrType, *hrTypeO)
+
     #adding details if the mark already exists
     if option ==1:
 
+        deadlineList = datetimeToList(deadline)
+
         nameBox.insert(0, "{}".format(name))
         descriptionBox.insert(0, "{}".format(details))
-        deadlineBox.insert(0, "{}".format(deadline))
+        yearBox.insert(0, "{}".format(deadlineList[0]))
+        hrBox.insert(0, "{}".format(deadlineList[3]))
+        minBox.insert(0, "{}".format(deadlineList[4]))
         colorBox.insert(0, "{}".format(color))
+
+        monthType.set(deadlineList[1])
+        dayType.set(deadlineList[2])
+        hrType.set(deadlineList[5])
 
     #button definitions
     saveMarkButton = tk.Button(
@@ -446,7 +516,8 @@ def editMark(searchMarkName, list, option, listFrame, window):
         height=1,
         bg="black",
         fg='white',
-        command=lambda: addMark(mark, list, option, editMarkFrame, prioType, listFrame, window)
+        command=lambda: addMark(mark, list, option, editMarkFrame, prioType, monthType.get(), dayType.get(),
+                                hrType.get(), listFrame, window)
     )
 
     cancelMarkEditButton = tk.Button(
@@ -467,7 +538,17 @@ def editMark(searchMarkName, list, option, listFrame, window):
         descriptionLabel.pack()
         descriptionBox.pack()
         deadlineLabel.pack()
-        deadlineBox.pack()
+        markYearLabel.pack()
+        yearBox.pack()
+        markMonthLabel.pack()
+        monthMenu.pack()
+        markDayLabel.pack()
+        dayMenu.pack()
+        markHrLabel.pack()
+        hrBox.pack()
+        markMinLabel.pack()
+        minBox.pack()
+        hrMenu.pack()
         prioLabel.pack()
         prioDrop.pack()
         colorLabel.pack()
@@ -479,7 +560,7 @@ def editMark(searchMarkName, list, option, listFrame, window):
 
 '''
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-FUNCTIONS
+BUTTON FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 '''
 '''
@@ -514,19 +595,23 @@ option: Int value (0,1) 0: add new mark, 1: save changes to mark
 frame: Tk editMarkClass frame
 prioType: data inside option box
 '''
-def addMark(mark, list, option, frame, prioType, listFrame, window):
+def addMark(mark, list, option, frame, prioType, month, day, hrType, listFrame, window):
     #finding information from the frame
     objects = frame.winfo_children()
-    name = objects[6].get()
-    details = objects[7].get()
-    deadline = objects[8].get()
-    color = objects[9].get()
+    #starts at 11
+    name = objects[11].get()
+    details = objects[12].get()
+    year = objects[13].get()
+    hr = objects[14].get()
+    min = objects[15].get()
     prio = int(prioType.get())
+    color = objects[16].get()
 
-    if isfloat(deadline):
+    deadline = createDatetime(year, month, day, hr, min, hrType)
+
+    if deadline is not None:
         deleteFrame(frame, [False])
         deleteFrame(listFrame, [False])
-        deadline = float(deadline)
         # creating new mark if adding, editing if edit
         if option == 0:
             mark = Mark(name, details, deadline, prio, color)
@@ -559,7 +644,7 @@ def removeItem(markName, list, listFrame, window):
     mark = list.findMark(markName)
     if mark != None:
         #checks to see if last item in list
-        if mark.getNext() == None and mark.getPrevious() == None:
+        if list.getHead() == mark and mark.getNext() is None:
             check = tk.messagebox.askyesno(title='SimpleMark',
                                            message="Deleting Mark '{}' will also delete the list. Continue?"
                                            .format(mark.getName()))
@@ -669,70 +754,39 @@ Saves and opens list
 frame: createFrame that holds all objects
 prioType: Priority from createFrame
 '''
-def saveAndOpenList(window, frame, prioType):
-    # starts at index 8
+def saveAndOpenList(window, frame, prioType, month, day, hrType):
+    # starts at index 13
     objects = frame.winfo_children()
-    listName = objects[8]
-    markName = objects[9]
-    markDetails = objects[10]
-    markDeadline = objects[11]
+    print(objects)
+    listName = objects[13]
+    markName = objects[15]
+    markDetails = objects[14]
+    year = objects[16]
+    hr = objects[17]
+    min = objects[18]
     markPrio = int(prioType.get())
-    markColor = objects[12]
+    markColor = objects[19]
 
     listName = listName.get()
     markName = markName.get()
     markDetails = markDetails.get()
-    markDeadline = markDeadline.get()
+    year = year.get()
+    hr = hr.get()
+    min = min.get()
     markColor = markColor.get()
 
-    if listName == '' or markName == '' or markDetails == '' or markDeadline == '' or markColor == '':
+    if listName == '' or markName == '' or markDetails == '' or year == '' or hr == '' or min == '' or markColor == '':
         tk.messagebox.showerror(title="SimpleMark", message="Please enter all information")
     else:
-        if isfloat(markDeadline):
-            markDeadline = float(markDeadline)
+        time = createDatetime(year, month, day, hr, min, hrType)
+        if time is not None:
             #creates mark and list objects, and saves them to a new file
-            mark = Mark(markName, markDetails, markDeadline, markPrio, markColor)
+            mark = Mark(markName, markDetails, time, markPrio, markColor)
             list = List(listName, mark)
             file = saveList(list)
 
             openListFromFile(window, file, None)
             deleteFrame(frame, [False])
-        else:
-            tk.messagebox.showerror(title='SimpleMark', message="Please enter a number for deadline")
-'''
-gets the full path of the file
-Returns: String value of the path of the file
-choice: File being looked for
-names: List containing all full names
-paths: List containing all full paths
-'''
-def getPath(choice, names, paths):
-    path = ''
-    for i in range(len(names)):
-        if choice == names[i]:
-            path = paths[i]
-    return path
-'''
-Checks if a value is float
-num: value to be checked
-'''
-def isfloat(num):
-    try:
-        float(num)
-        return True
-    except ValueError:
-         return False
-
-'''
-Checks if number is integer
-num: value to be checked
-'''
-def isint(num):
-    try:
-        int(num)
-        return True
-    except ValueError:
-        return False
 
 '''
 Runs reminders when list is open, cancels run when list is closed
@@ -750,21 +804,27 @@ def reminders(list):
     #Finding if notif has already been run for each variable
     mark = list.getHead()
     runAlready = []
+    #Creating array for running notifications
     for i in range(listLength):
-        prio = mark.getPrio()
-        print(prio)
+        prio = int(mark.getPrio())
+        #print(prio)
         if prio == 1:
-            runAlready.extend([True, True, True, True, False])
+            #print("1 {}".format(mark.getName()))
+            runAlready.extend([False, True, True, True, True])
         elif prio == 2:
-            runAlready.extend([True, True, True, False, False])
+            #print("2 {}".format(mark.getName()))
+            runAlready.extend([False, False, True, True, True])
         elif prio == 3:
-            runAlready.extend([True, True, False, False, False])
+            #print("3 {}".format(mark.getName()))
+            runAlready.extend([False, False, False, True, True])
         elif prio == 4:
-            runAlready.extend([True, False, False, True, False])
+            #("4 {}".format(mark.getName()))
+            runAlready.extend([False, False, False, False, True])
         else:
+            #print("5 {}".format(mark.getName()))
             runAlready.extend([False, False, False, False, False])
         mark = mark.getNext()
-    print(runAlready)
+
     #runs while the list is open
     while notifRun:
         print('checking notifs')

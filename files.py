@@ -1,7 +1,7 @@
 import os
 import re
 from listmarkclass import *
-
+from miscFunctions import *
 
 '''
 Saves List to ListData file
@@ -24,7 +24,7 @@ def saveList(list):
         mark = list.getHead()
 
         for i in range(length):
-            file.write('{},&,{},&,{},&,{},&,{}\n'.format(mark.getName(), mark.getDetails(),
+            file.write('{}\n{}\n{}\n{}\n{}\n'.format(mark.getName(), mark.getDetails(),
                                                        mark.getDeadline(), mark.getPrio(), mark.getColor()))
             mark = mark.getNext()
 
@@ -52,18 +52,21 @@ def openList(path):
             listName = listName.strip()
             #finds length and defines regex to read from file
             length = int(file.readline())
-            regex = re.compile(r'\w+')
-            deadlineRegex = re.compile(r'\d+\.\d+')
-            line = file.readline()
-            #Finds the information for the first mark in the list, to create the list object
-            information = regex.findall(line)
-            deadlineSearch = deadlineRegex.findall(line)
+            #finds all information for first mark in list
+            name = file.readline()
+            details = file.readline()
+            details = details.strip()
+            deadline = file.readline()
+            prio = file.readline()
+            color = file.readline()
 
-            name = information[0]
-            details = information[1]
-            deadline = float(deadlineSearch[0])
-            prio = information[4]
-            color = information[5]
+            #removing new line character
+            name = name.strip()
+            details = details.strip()
+            deadline = deadline.strip()
+            deadline = translateDatetime(deadline)
+            prio = prio.strip()
+            color = color.strip()
 
             headMark = Mark(name, details, deadline, prio, color)
 
@@ -71,15 +74,18 @@ def openList(path):
 
             #Adds the rest of the marks in the list
             for i in range(length - 1):
-                line = file.readline()
-                information = regex.findall(line)
-                deadline = deadlineRegex.findall(line)
+                name = file.readline()
+                details = file.readline()
+                deadline = file.readline()
+                prio = file.readline()
+                color = file.readline()
 
-                name = information[0]
-                details = information[1]
-                deadline = float(deadlineSearch[0])
-                prio = information[4]
-                color = information[5]
+                name = name.strip()
+                details = details.strip()
+                deadline = deadline.strip()
+                deadline = translateDatetime(deadline)
+                prio = prio.strip()
+                color = color.strip()
 
                 newMark = Mark(name, details, deadline, prio, color)
 

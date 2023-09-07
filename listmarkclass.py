@@ -16,7 +16,6 @@ class List:
     '''
     def add(self, newMark):
         #checking for same name first
-        print('hi')
         mark = self.head
         doPass = True
         while mark.getNext() != None:
@@ -36,6 +35,7 @@ class List:
                     self.head.setNext(tmp)
                 else:
                     self.head.setNext(newMark)
+                    newMark.setPrevious(self.head)
             else:
                 #more than one item in the list
                 current = self.head
@@ -63,6 +63,7 @@ class List:
                         # if last item in the list
                         if current.getNext() == None:
                             run = False
+                            print(current.getName())
                             current.setNext(newMark)
                             newMark.setPrevious(current)
                         #otherwise iterate again.
@@ -91,9 +92,12 @@ class List:
                     mark = mark.getNext()
                     if mark == toRemove:
                         previous = mark.getPrevious()
-                        next = mark.getNext()
-                        previous.setNext(next)
-                        if next != None:
+                        if previous.getName() == self.head.getName():
+                            previous.setNext(None)
+                        else:
+                            next = mark.getNext()
+                            previous.setNext(next)
+                        if mark.getNext() != None:
                             next.setPrevious(previous)
         else:
             self.head = None
@@ -126,7 +130,7 @@ class List:
     '''
     Lists all marks within the list (testing purposes)
     '''
-    def list(self):
+    def printList(self):
         if self.length > 0:
             mark = self.head
             print(mark.getName())

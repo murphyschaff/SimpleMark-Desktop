@@ -20,6 +20,7 @@ def runNotif(list, length, timeZone, notifTimes, runAlready):
     listName = list.getName()
     currentTime = time.time()
     currentTime = DateTime(currentTime, timeZone)
+    print(runAlready)
 
     #Runs for each item in the list
     for i in range(length):
@@ -38,9 +39,12 @@ def runNotif(list, length, timeZone, notifTimes, runAlready):
             notif.show()
         else:
             #Reminder notification
-            send = checkRemindTime(deadline.timeTime(), notifTimes, currentTime, prio)
-            print(send)
-            if send is True:
+            currentRunAlready = []
+            currentRunAlready.append([runAlready[(i*5)], runAlready[(i*5)+1], runAlready[(i*5)+2], runAlready[(i*5)+3],
+                                      runAlready[(i*5)+4]])
+            send = checkRemindTime(deadline.timeTime(), notifTimes, currentTime, prio, currentRunAlready)
+            if send[0] is True:
+                runAlready[(i*5) + send[1]] = True
                 notif = Toast("SimpleMark", "Mark", ActivationType="protocol", Duration="long")
                 cwd = os.getcwd()
                 logo = cwd + "\\logo.png"
@@ -55,22 +59,28 @@ def runNotif(list, length, timeZone, notifTimes, runAlready):
 
 '''
 Checks if reminder notification should be sent
-Returns: boolean value (true if should be sent, false if not
+Returns: List of boolean and int value, i0: if notif should be sent, i1: index of runAlready to update
     
 deadline: time value of mark's deadline
 notifLength: list of reminder lengths (from config file)
 currentTime: current time of the system
-prio: int priority of the mark 
+prio: int priority of the mark
+runAlready: Boolean list if the notif for that prio has run already
 '''
-def checkRemindTime(deadline, notifLength, currentTime, prio):
+def checkRemindTime(deadline, notifLength, currentTime, prio, runAlready):
 
     sendRemind = False
-    # Runs once for each level in prio, sends one notification if within time frame
-    for i in range(prio):
-        check = float(notifLength[i])
-        check = deadline - check
-
-        if currentTime >= check:
+    prio = int(prio)
+    run = True
+    i = 0
+    while run:
+        if deadline > notifLength[i] and not runAlready[i]:
+            runAlready[i] = True
             sendRemind = True
+            run = False
+        else:
+            i = i + 1
+        if i > 4:
+            run = False
 
-    return sendRemind
+    return [sendRemind, i]
