@@ -28,10 +28,14 @@ class App(tk.Tk):
     def on_exit(self):
         global notifRun
         """When you click to exit, this function is called"""
-        if tk.messagebox.askyesno("SimpleMark", "Do you want to quit the application?"):
-            self.destroy()
-            notifRun = False
-
+        name = self.wm_title()
+        print(name != "SimpleMark")
+        if name != "SimpleMark" and name != "SimpleMark: Edit Config" and name != "SimpleMark: Create List":
+            tk.messagebox.showinfo("SimpleMark", "Please close list before closing application.")
+        else:
+            if tk.messagebox.askyesno("SimpleMark", "Do you want to quit the application?"):
+                self.destroy()
+                notifRun = False
 
     def make_topmost(self):
         """Makes this window the topmost window"""
@@ -695,7 +699,7 @@ class App(tk.Tk):
             if check2:
                 print("Deleted list {} from {}".format(list.getName(), file))
                 os.remove(file)
-                self.deleteFrame(listFrame, [True, window])
+                self.deleteFrame(listFrame, [True,])
 
     '''
     Saves the config data to file and updates it
