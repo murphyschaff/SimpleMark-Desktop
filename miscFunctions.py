@@ -11,8 +11,9 @@ day: Int value of day
 hr: Int value of hour
 min: Int value of min
 hrType: String value (AM, PM)
+configData: list of configuration data
 '''
-def createDatetime(year, monthTxt, day, hr, min, hrType):
+def createDatetime(year, monthTxt, day, hr, min, hrType, configData):
     months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
               "November", "December"]
     month = 0
@@ -99,8 +100,6 @@ def datetimeToList(time):
     wordMonth = months[month - 1]
 
     return[year, wordMonth, day, hr, min, hrType]
-
-
 
 
 '''

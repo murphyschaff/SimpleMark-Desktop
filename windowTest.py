@@ -1,37 +1,22 @@
-import os
-import tkinter.messagebox
-from listmarkclass import *
-from files import *
-from notifications import *
 import tkinter as tk
-from tkinter import *
-import time
-import threading
-from miscFunctions import *
+from tkinter import messagebox
+from SimpleMark import *
 
 
-'''
-~~~~~SIMPLEMARK v1~~~~~
-
-Created by Murphy Schaff; 2023
-'''
 class App(tk.Tk):
 
     def __init__(self):
         tk.Tk.__init__(self)
         self.title("SimpleMark")
-        #self.geometry("500x300+500+200")
+        self.geometry("500x300+500+200")
         self.make_topmost()
         self.protocol("WM_DELETE_WINDOW", self.on_exit)
         self.mainPage()
 
     def on_exit(self):
-        global notifRun
         """When you click to exit, this function is called"""
-        if tk.messagebox.askyesno("SimpleMark", "Do you want to quit the application?"):
+        if messagebox.askyesno("Exit", "Do you want to quit the application?"):
             self.destroy()
-            notifRun = False
-
 
     def make_topmost(self):
         """Makes this window the topmost window"""
@@ -68,7 +53,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.openListFromFile(getPath(dropType.get(), names, paths), mainFrame)
+            command=lambda: openListFromFile(window, getPath(dropType.get(), names, paths), mainFrame)
         )
 
         createButton = tk.Button(
@@ -112,8 +97,8 @@ class App(tk.Tk):
     '''
     def createList(self, mainFrame):
 
-        self.deleteFrame(mainFrame, [False])
-        self.title("SimpleMark: Create List")
+        deleteFrame(mainFrame, [False])
+        window.title("SimpleMark: Create List")
 
         createFrame = tk.Frame()
         createFrame.pack()
@@ -176,7 +161,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.saveAndOpenList(createFrame, prioType, monthType.get(), dayType.get(), hrType.get())
+            command=lambda: saveAndOpenList(window, createFrame, prioType, monthType.get(), dayType.get(), hrType.get())
         )
 
         cancelButton = tk.Button(
@@ -186,7 +171,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.deleteFrame(createFrame, [True,])
+            command=lambda: deleteFrame(createFrame, [True, window])
         )
 
         # adding objects to frame
@@ -223,8 +208,7 @@ class App(tk.Tk):
 
     def editConfig(self, configData, mainFrame):
 
-        self.deleteFrame(mainFrame, [False])
-        self.title("SimpleMark: Edit Config")
+        deleteFrame(mainFrame, [False])
 
         configFrame = tk.Frame()
         configFrame.pack()
@@ -268,7 +252,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.saveConfigData(configData, configFrame,dropType.get())
+            command=lambda: saveConfigData(configData, configFrame, window, dropType.get())
         )
 
         backHomeButton = tk.Button(
@@ -278,15 +262,15 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.deleteFrame(configFrame, [True,])
+            command=lambda: deleteFrame(configFrame, [True, window])
         )
         # inserting information
         timezoneEntry.insert(0, configData[0])
-        notif1Entry.insert(0, int(configData[2]))
-        notif2Entry.insert(0, int(configData[3]))
-        notif3Entry.insert(0, int(configData[4]))
-        notif4Entry.insert(0, int(configData[5]))
-        notif5Entry.insert(0, int(configData[6]))
+        notif1Entry.insert(0, configData[2])
+        notif2Entry.insert(0, configData[3])
+        notif3Entry.insert(0, configData[4])
+        notif4Entry.insert(0, configData[5])
+        notif5Entry.insert(0, configData[6])
 
         # item packing
         configLabel.pack()
@@ -316,11 +300,11 @@ class App(tk.Tk):
 
         listFrame = tk.Frame()
         listFrame.pack()
-        self.title("SimpleMark List: {}".format(list.getName()))
+        window.title("SimpleMark List: {}".format(list.getName()))
         listString = ""
         mark = list.getHead()
         # clears any previous data from the list
-        self.clearFrame(listFrame)
+        clearFrame(listFrame)
         # lists every item in the list
 
         for i in range(list.getLength()):
@@ -350,7 +334,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.editMark(None, list, 0, listFrame)
+            command=lambda: editMark(None, list, 0, listFrame)
         )
 
         removeItemButton = tk.Button(
@@ -360,7 +344,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.removeItem(markEntry.get(), list, listFrame)
+            command=lambda: removeItem(markEntry.get(), list, listFrame, window)
         )
 
         removeListButton = tk.Button(
@@ -370,7 +354,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.deleteList(list, listFrame)
+            command=lambda: deleteList(list, listFrame, window)
         )
         editMarkButton = tk.Button(
             master=listFrame,
@@ -379,7 +363,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.editMark(markEntry.get(), list, 1, listFrame)
+            command=lambda: editMark(markEntry.get(), list, 1, listFrame)
         )
         backButton = tk.Button(
             master=listFrame,
@@ -388,7 +372,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.deleteFrame(listFrame, [True,])
+            command=lambda: deleteFrame(listFrame, [True, window])
         )
         # Information Text Box
         markEntryLabel = tk.Label(master=listFrame, text="Add name of object to edit/delete")
@@ -406,7 +390,7 @@ class App(tk.Tk):
         backButton.pack()
 
         # Starts the notification threads to run in the background
-        remindThread = threading.Thread(target=self.reminders, args=(list,))
+        remindThread = threading.Thread(target=reminders, args=(list, window,))
         remindThread.start()
 
     '''
@@ -528,8 +512,8 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.addMark(mark, list, option, editMarkFrame, prioType, monthType.get(), dayType.get(),
-                                    hrType.get(), listFrame)
+            command=lambda: addMark(mark, list, option, editMarkFrame, prioType, monthType.get(), dayType.get(),
+                                    hrType.get(), listFrame, window)
         )
 
         cancelMarkEditButton = tk.Button(
@@ -539,7 +523,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.deleteFrame(editMarkFrame, [False])
+            command=lambda: deleteFrame(editMarkFrame, [False])
         )
 
         if showFrame:
@@ -568,300 +552,4 @@ class App(tk.Tk):
             saveMarkButton.pack()
             cancelMarkEditButton.pack()
         else:
-            self.deleteFrame(editMarkFrame, [False])
-
-
-    '''
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    BUTTON FUNCTIONS
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    '''
-    '''
-    Updates the list after a change was made
-    list: List object needed to be updated
-    frame: Tk frame editMarkClass
-    mainFrame: Tk Frame holding the create and open buttons
-        '''
-    def openListFromFile(self, file, mainFrame):
-
-        if os.path.exists(file) and os.path.isfile(file):
-            list = openList(file)
-            if list is not None:
-                print("Opened list from: {}".format(file))
-                name = list.getName()
-                self.title("SimpleMark: {}".format(name))
-                if mainFrame != None:
-                    self.deleteFrame(mainFrame, [False])
-                self.updateList(list)
-            else:
-                tkinter.messagebox.showerror(title="SimpleMark",
-                                                message="Not a Simple Mark List File. Please open a Simple Mark List.")
-        else:
-            tkinter.messagebox.showerror(title="SimpleMark", message="Please open a valid file.")
-
-    '''
-    creates window to add item to the list
-    mark: Mark object to be added/edited
-    list: List object for the mark in question
-    option: Int value (0,1) 0: add new mark, 1: save changes to mark
-    frame: Tk editMarkClass frame
-    prioType: data inside option box
-    '''
-    def addMark(self, mark, list, option, frame, prioType, month, day, hrType, listFrame):
-        #finding information from the frame
-        objects = frame.winfo_children()
-        #starts at 11
-        name = objects[11].get()
-        details = objects[12].get()
-        year = objects[13].get()
-        hr = objects[14].get()
-        min = objects[15].get()
-        prio = int(prioType.get())
-        color = objects[16].get()
-
-        deadline = createDatetime(year, month, day, hr, min, hrType, configData)
-
-        if deadline is not None:
-            self.deleteFrame(frame, [False])
-            self.deleteFrame(listFrame, [False])
-            # creating new mark if adding, editing if edit
-            if option == 0:
-                mark = Mark(name, details, deadline, prio, color)
-                doPass = list.add(mark)
-                if doPass:
-                    saveList(list)
-                    self.updateList(list)
-                else:
-                    self.updateList(list)
-                    tk.messagebox.showerror(title="SimpleMark", message="Name already used in list")
-            else:
-
-                mark.changeName(name)
-                mark.changeDetails(details)
-                mark.changeDeadline(deadline)
-                mark.changePriority(prio)
-                mark.changeColor(color)
-                saveList(list)
-
-                self.updateList(list)
-        else:
-            tk.messagebox.showerror(title="SimpleMark", message="Please enter a number for a deadline")
-    '''
-    removes item from list
-    markName: String name of mark to be removed
-    list: List object of mark to remove
-    listFrame: Tk Frame list frame
-    '''
-    def removeItem(self, markName, list, listFrame):
-        mark = list.findMark(markName)
-        if mark != None:
-            #checks to see if last item in list
-            if list.getHead() == mark and mark.getNext() is None:
-                check = tk.messagebox.askyesno(title='SimpleMark',
-                                               message="Deleting Mark '{}' will also delete the list. Continue?"
-                                               .format(mark.getName()))
-                if check:
-                    self.deleteList(list, listFrame)
-            else:
-                check = tk.messagebox.askokcancel(title="SimpleMark", message="This will remove mark '{}' from list '{}'. "
-                                                                              "Are you sure?"
-                                                  .format(mark.getName(), list.getName()))
-                # if user clicks ok, the item is removed from the list and the list is saved
-                if check:
-                    list.remove(mark)
-                    saveList(list)
-                    self.deleteFrame(listFrame, [False])
-                    self.updateList(list)
-        else:
-            if markName == '':
-                tk.messagebox.showerror(title="SimpleMark", message="Please enter the name of a mark in the list")
-            else:
-                tk.messagebox.showerror(title="SimpleMark", message="Mark {} not found in list {}".format(markName,
-                                                                                                          list.getName()))
-
-    '''
-    Deletes list and file from computer
-    list: List object to be deleted
-    listFrame: Tk Frame listFrame
-    '''
-    def deleteList(self, list, listFrame):
-
-        file = os.getcwd() + "\\ListData\\{}.txt".format(list.getName())
-
-        check1 = tk.messagebox.askyesno(title="SimpleMark", message="Are you sure you want to remove list '{}'?"
-                                        .format(list.getName()))
-        if check1:
-            check2 = tk.messagebox.askyesno(title="SimpleMark",message="Are you really sure?")
-            if check2:
-                print("Deleted list {} from {}".format(list.getName(), file))
-                os.remove(file)
-                self.deleteFrame(listFrame, [True, window])
-
-    '''
-    Saves the config data to file and updates it
-    configData: list that contains all configuration data
-    configFrame: Tk frame for config page
-    window: Tk object for the main window
-    remindTime: Time selected between reminders
-    '''
-    def saveConfigData(self, configData, configFrame, remindTime):
-        #data starts at index 7
-        options = configFrame.winfo_children()
-        print(options)
-
-        timezone = options[8].get()
-        prio1 = options[9].get()
-        prio2 = options[10].get()
-        prio3 = options[11].get()
-        prio4 = options[12].get()
-        prio5 = options[13].get()
-
-        #Makes sure all entered times entered are integers
-        if isint(prio1) and isint(prio2) and isint(prio3) and isint(prio4) and isint(prio5):
-            prio1 = int(prio1)
-            prio2 = int(prio2)
-            prio3 = int(prio3)
-            prio4 = int(prio4)
-            prio5 = int(prio5)
-            remindTime = int(remindTime)
-
-            configData[0] = timezone
-            configData[2] = prio1
-            configData[3] = prio2
-            configData[4] = prio3
-            configData[5] = prio4
-            configData[6] = prio5
-            configData[7] = remindTime
-
-            saveConfig(configData)
-
-            self.deleteFrame(configFrame, [True,])
-            print("Config Data saved")
-
-        else:
-            tk.messagebox.showerror(title="SimpleMark", message='All notif times must be numbers')
-
-    '''
-    Removes frame from screen
-    frame: Tk frame object to be deleted
-    openMain: list that checks if main needs to be opened
-    '''
-    def deleteFrame(self, frame, openMain):
-        global notifRun
-        notifRun = False
-        frame.destroy()
-        if openMain[0]:
-            self.mainPage()
-
-    '''
-    Clears the frame that is sent to the function of objects
-    frame: tk frame to have objects removed
-    '''
-    def clearFrame(self,frame):
-        for widget in frame.winfo_children():
-            widget.destroy()
-            print("object destroyed")
-    '''
-    Saves and opens list
-    frame: createFrame that holds all objects
-    prioType: Priority from createFrame
-    '''
-    def saveAndOpenList(self,frame, prioType, month, day, hrType):
-        # starts at index 13
-        objects = frame.winfo_children()
-        print(objects)
-        listName = objects[13]
-        markName = objects[15]
-        markDetails = objects[14]
-        year = objects[16]
-        hr = objects[17]
-        min = objects[18]
-        markPrio = int(prioType.get())
-        markColor = objects[19]
-
-        listName = listName.get()
-        markName = markName.get()
-        markDetails = markDetails.get()
-        year = year.get()
-        hr = hr.get()
-        min = min.get()
-        markColor = markColor.get()
-
-        if listName == '' or markName == '' or markDetails == '' or year == '' or hr == '' or min == '' or markColor == '':
-            tk.messagebox.showerror(title="SimpleMark", message="Please enter all information")
-        else:
-            time = createDatetime(year, month, day, hr, min, hrType, configData)
-            if time is not None:
-                #creates mark and list objects, and saves them to a new file
-                mark = Mark(markName, markDetails, time, markPrio, markColor)
-                list = List(listName, mark)
-                file = saveList(list)
-
-                self.openListFromFile(file, None)
-                self.deleteFrame(frame, [False])
-
-    '''
-    Runs reminders when list is open, cancels run when list is closed
-    list: List object of reminders to run
-    window: window object
-    '''
-    def reminders(self,list):
-        global notifRun
-        notifRun = True
-        checkTime = configData[7]
-        timeZone = configData[0]
-        notifTimes = [configData[2], configData[3], configData[4], configData[5], configData[6]]
-        print(notifTimes)
-        listLength = list.getLength()
-
-        #Finding if notif has already been run for each variable
-        mark = list.getHead()
-        runAlready = []
-        #Creating array for running notifications
-        for i in range(listLength):
-            prio = int(mark.getPrio())
-            #print(prio)
-            if prio == 1:
-                #print("1 {}".format(mark.getName()))
-                runAlready.extend([False, True, True, True, True])
-            elif prio == 2:
-                #print("2 {}".format(mark.getName()))
-                runAlready.extend([False, False, True, True, True])
-            elif prio == 3:
-                #print("3 {}".format(mark.getName()))
-                runAlready.extend([False, False, False, True, True])
-            elif prio == 4:
-                #("4 {}".format(mark.getName()))
-                runAlready.extend([False, False, False, False, True])
-            else:
-                #print("5 {}".format(mark.getName()))
-                runAlready.extend([False, False, False, False, False])
-            mark = mark.getNext()
-
-        #runs while the list is open
-        while notifRun:
-            print('checking notifs')
-            runNotif(list, list.getLength(), timeZone, notifTimes, runAlready)
-            time.sleep(checkTime)
-        exit()
-
-
-'''
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-MAIN
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-'''
-configData = openConfig()
-print(configData)
-list = ""
-if configData != None:
-    # creates window and residual parts of the window itself
-    global notifRun
-    notifRun = True
-    App().mainloop()
-
-
-else:
-    print("Failed to load SimpleMark. Configuration file not found.")
-    tkinter.messagebox.showerror(title="SimpleMark", message=
-                                       "Failed to load SimpleMark. Configuration file not found.")
+            deleteFrame(editMarkFrame, [False])

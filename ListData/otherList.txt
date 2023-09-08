@@ -1,4 +1,0 @@
-SimpleMarkListType
-newList
-1
-Mark3,&,test,&,1692911918.7568932,&,3,&,blue
