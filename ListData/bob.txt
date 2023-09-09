@@ -1,8 +1,0 @@
-SimpleMarkListType
-bob
-1
-Mark 1
-this is a cool mark
-2023-02-11 01:01:00
-1
-blue

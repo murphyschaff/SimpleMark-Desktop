@@ -4,7 +4,34 @@ import time
 from windowstoast import Toast
 from notifications import *
 #from userInterface import *
+from miscFunctions import *
 
+#print(list(range(0,10)))
+message = "hit0:- e"
+key = [1,2,3,4,5,6,7,8]
+encoded = encode(key, message)
+print(encoded)
+print(decrypt(key, encoded))
+
+key = keyGen(len(message))
+encoded = encode(key, message)
+print(encoded)
+print(decrypt(key, encoded))
+
+print(key)
+stringKey = numToStringKey(key)
+print(stringKey)
+print(stringToNumKey(stringKey))
+
+stringm = "5h1 :-"
+print(findString(stringm))
+stringn = "bobuncle"
+print(stringn + randomstring(5))
+print(list(range(1,5)))
+
+
+
+'''
 mark1 = Mark("Mark1", "test", time.time(), 1, "blue")
 time.sleep(1)
 mark2 = Mark("Mark2", "test", time.time(), 2, "blue")
@@ -34,7 +61,7 @@ saveList(list)
 list = openList('C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListData\\bob.txt')
 list.list()
 print(list.getLength())
-
+'''
 '''
 list.remove(mark5)
 list.remove(mark1)
@@ -50,9 +77,6 @@ print("ran")
 #print(list.getHead().getName())
 
 
-print(list.getHead().getNext().getName())
-
-path = 'C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListData\\bob.txt'
 
 '''
 notifTestMark = Mark("Test", "This is a test", time.time() + 3500, 3, "blue")
@@ -61,7 +85,10 @@ newList = List("Notif list", notifTestMark)
 saveList(newList)
 path = 'C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListData\\Notif list.txt'
 '''
+'''
+print(list.getHead().getNext().getName())
 
+path = 'C:\\Users\\bluej\\OneDrive\\Documents\\SimpleMark\\SimpleMarkv1\\ListData\\bob.txt'
 configData = ['US/Mountain', path, 900, 1800, 3600, 5400, 7200]
 saveConfig(configData)
 configData = openConfig()
@@ -69,7 +96,7 @@ configData = openConfig()
 
 notifTimes = [configData[2], configData[3], configData[4], configData[5], configData[6]]
 runNotif(list, list.getLength(), configData[0], notifTimes)
-
+'''
 
 
 

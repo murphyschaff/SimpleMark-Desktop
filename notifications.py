@@ -5,30 +5,27 @@ from datetime import datetime
 import os
 from listmarkclass import *
 
-
-
 '''
 Checks if mark needs to send notification
+Returns: Boolean if all notifications have been run
+
 list: list object of list to check for notificaitons
 length: length of list (simplicity purposes)
 timeZone: Current time zone, based from config file
-notifTimes: List that specifies how frequently (in seconds) to notify for a mark
+notifTimes: List that specifies how frequently (in seconds) to notify for a mark 
 runAlready: Boolean list to check if the notif had been run already since opening
 '''
 def runNotif(list, length, timeZone, notifTimes, runAlready):
 
     mark = list.getHead()
     listName = list.getName()
-    currentTime = time.time()
     currentTime = datetime.now()
-    print(runAlready)
 
     #Runs for each item in the list
     for i in range(length):
-        print(runAlready)
         prio = mark.getPrio()
         deadline = mark.getDeadline()
-
+        print(runAlready)
         #If the deadline is after the current time, the final notification pops
         if deadline <= currentTime:
             notif = Toast("SimpleMark", "Mark", ActivationType="protocol", Duration="long")
@@ -46,7 +43,7 @@ def runNotif(list, length, timeZone, notifTimes, runAlready):
             #Adds the boolean values for the current prio level to another list
             for x in range(5):
                 currentRunAlready.append(runAlready[(i * 5) + x])
-            send = checkRemindTime(deadline, notifTimes, prio, currentRunAlready)
+            send = checkRemindTime(deadline, notifTimes, prio, currentRunAlready, currentTime)
             if send[0] is True:
                 runAlready[(i*5) + send[1]] = True
                 notif = Toast("SimpleMark", "Mark", ActivationType="protocol", Duration="long")
@@ -61,6 +58,13 @@ def runNotif(list, length, timeZone, notifTimes, runAlready):
 
         mark = mark.getNext()
 
+    stopNotif = True
+    #checks and sees if another notification still needs to be run, stops progress if so
+    for i in range(len(runAlready)):
+        if runAlready[i] == False:
+            stopNotif = False
+    return stopNotif
+
 '''
 Checks if reminder notification should be sent
 Returns: List of boolean and int value, i0: if notif should be sent, i1: index of runAlready to update
@@ -70,7 +74,7 @@ notifLength: list of reminder lengths (from config file)
 prio: int priority of the mark
 runAlready: Boolean list if the notif for that prio has run already
 '''
-def checkRemindTime(deadline, notifLength, prio, runAlready):
+def checkRemindTime(deadline, notifLength, prio, runAlready, currentTime):
 
     sendRemind = False
     prio = int(prio)
@@ -128,14 +132,15 @@ def checkRemindTime(deadline, notifLength, prio, runAlready):
     run = True
     i = 0
     #Checks and sees if the notifications need to be run, if the deadline is greater than remind time
+
     while run:
-        if deadline > difference[i] and not runAlready[i]:
+        if currentTime <= difference[i] and not runAlready[i]:
             runAlready[i] = True
             sendRemind = True
             run = False
         else:
             i = i + 1
-        if i > len(difference):
+        if i >= len(difference):
             run = False
 
     return [sendRemind, i]

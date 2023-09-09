@@ -2,6 +2,7 @@ import os
 import re
 from listmarkclass import *
 from miscFunctions import *
+import string
 
 '''
 Saves List to ListData file
@@ -24,8 +25,41 @@ def saveList(list):
         mark = list.getHead()
 
         for i in range(length):
-            file.write('{}\n{}\n{}\n{}\n{}\n'.format(mark.getName(), mark.getDetails(),
-                                                       mark.getDeadline(), mark.getPrio(), mark.getColor()))
+            name = mark.getName()
+            details = mark.getDetails()
+            deadline = mark.getDeadline()
+            deadline = str(deadline)
+            prio = mark.getPrio()
+            color = mark.getColor()
+            #Keys for encoding
+            namek = keyGen(len(name))
+            detailsk = keyGen(len(details))
+            deadlinek = keyGen(len(deadline))
+            priok = keyGen(1)
+            colork = keyGen(len(color))
+            #finding largest length string
+            lengths = [len(name), len(details), len(deadline), 1, len(color)]
+            largestLength = lengths[i]
+            for i in range(len(lengths)):
+                if lengths[i] > largestLength:
+                    largestLength = lengths[i]
+            #encodes the details for each mark before printing to file
+            encodedName = str(len(name)) + ',' + encode(namek, name) + randomstring(largestLength - len(name))
+            encodedDetails = str(len(details)) + ',' + encode(detailsk, details) + randomstring(largestLength - len(details))
+            encDeadline = str(len(deadline))+ ',' + encode(deadlinek, deadline) + randomstring(largestLength - len(deadline))
+            encodedPrio = '1,' + encode(priok, str(prio)) + randomstring(largestLength - 1)
+            encodedColor = str(len(color)) + ',' + encode(colork, color) + randomstring(largestLength - len(color))
+            print('{} {} {} {} {}'.format(encodedName, encodedDetails, encDeadline, encodedPrio, encodedColor))
+            #turning key into text
+            namek = str(len(namek)) + ',' + numToStringKey(namek) + randomstring(largestLength - len(namek))
+            detailsk = str(len(detailsk))+ ',' + numToStringKey(detailsk) + randomstring(largestLength - len(detailsk))
+            deadlinek = str(len(deadlinek)) + ',' + numToStringKey(deadlinek) + randomstring(largestLength - len(deadlinek))
+            priok = '1,' + numToStringKey(priok) + randomstring(largestLength - 1)
+            colork = str(len(colork)) + ',' + numToStringKey(colork) + randomstring(largestLength - len(colork))
+
+            file.write('{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n'.format(encodedName,namek, encodedDetails, detailsk,
+                                                                         encDeadline, deadlinek, encodedPrio, priok,
+                                                                         encodedColor, colork))
             mark = mark.getNext()
 
         file.close()
@@ -54,40 +88,110 @@ def openList(path):
             length = int(file.readline())
             #finds all information for first mark in list
             name = file.readline()
+            namek = file.readline()
             details = file.readline()
-            details = details.strip()
+            detailsk = file.readline()
             deadline = file.readline()
+            deadlinek = file.readline()
             prio = file.readline()
+            priok = file.readline()
             color = file.readline()
+            colork = file.readline()
 
             #removing new line character
             name = name.strip()
+            namek = namek.strip()
             details = details.strip()
+            detailsk = detailsk.strip()
             deadline = deadline.strip()
-            deadline = translateDatetime(deadline)
+            deadlinek = deadlinek.strip()
             prio = prio.strip()
+            priok = priok.strip()
             color = color.strip()
+            colork = colork.strip()
 
-            headMark = Mark(name, details, deadline, prio, color)
+            #finding true values of each line
+            name = findString(name)
+            namek = findString(namek)
+            details = findString(details)
+            detailsk = findString(detailsk)
+            deadline = findString(deadline)
+            deadlinek = findString(deadlinek)
+            prio = findString(prio)
+            priok = findString(priok)
+            color = findString(color)
+            colork = findString(colork)
+            #decoding message: turning key into numbers
+            namek = stringToNumKey(namek)
+            detailsk = stringToNumKey(detailsk)
+            deadlinek = stringToNumKey(deadlinek)
+            priok = stringToNumKey(priok)
+            colork = stringToNumKey(colork)
+
+            #decoding actual messages
+            name = decrypt(namek, name)
+            details = decrypt(detailsk, details)
+            deadline = decrypt(deadlinek, deadline)
+            deadline = translateDatetime(deadline)
+            prio = decrypt(priok, prio)
+            color = decrypt(colork, color)
+
+            headMark = Mark(name, details, deadline, int(prio), color)
 
             list = List(listName, headMark)
 
             #Adds the rest of the marks in the list
             for i in range(length - 1):
                 name = file.readline()
+                namek = file.readline()
                 details = file.readline()
+                detailsk = file.readline()
                 deadline = file.readline()
+                deadlinek = file.readline()
                 prio = file.readline()
+                priok = file.readline()
                 color = file.readline()
+                colork = file.readline()
 
+                # removing new line character
                 name = name.strip()
+                namek = namek.strip()
                 details = details.strip()
+                detailsk = detailsk.strip()
                 deadline = deadline.strip()
-                deadline = translateDatetime(deadline)
+                deadlinek = deadlinek.strip()
                 prio = prio.strip()
+                priok = priok.strip()
                 color = color.strip()
+                colork = colork.strip()
 
-                newMark = Mark(name, details, deadline, prio, color)
+                # finding true values of each line
+                name = findString(name)
+                namek = findString(namek)
+                details = findString(details)
+                detailsk = findString(detailsk)
+                deadline = findString(deadline)
+                deadlinek = findString(deadlinek)
+                prio = findString(prio)
+                priok = findString(priok)
+                color = findString(color)
+                colork = findString(colork)
+
+                # decoding message: turning key into numbers
+                namek = stringToNumKey(namek)
+                detailsk = stringToNumKey(detailsk)
+                deadlinek = stringToNumKey(deadlinek)
+                priok = stringToNumKey(priok)
+                colork = stringToNumKey(colork)
+
+                # decoding actual messages
+                name = decrypt(namek, name)
+                details = decrypt(detailsk, details)
+                deadline = decrypt(deadlinek, deadline)
+                prio = decrypt(priok, prio)
+                color = decrypt(colork, color)
+
+                newMark = Mark(name, details, deadline, int(prio), color)
 
                 list.add(newMark)
 
@@ -98,10 +202,6 @@ def openList(path):
             return None
     else:
         return None
-
-
-
-
 
 '''
 Opens and reads information from the config file, converts information into an array
@@ -219,14 +319,3 @@ def saveConfig(configData):
     config.write("Time between reminder check: {}\n".format(remindersTime))
 
     config.close()
-
-
-
-
-
-
-
-
-
-
-

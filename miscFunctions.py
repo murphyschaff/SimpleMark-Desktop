@@ -1,6 +1,8 @@
 import datetime
 import tkinter as tk
 import re
+import string
+import random
 '''
 Takes given data and converts into datetime.datetime object
 Returns: Datetime.datetime object, None if invalid date
@@ -137,3 +139,192 @@ def isfloat(num):
         return True
     except ValueError:
          return False
+
+'''
+Encodes a line of a file at once using a one-time-pad vignere cipher
+Returns: String object of the encoded line
+
+key: Key used to encode line
+message: Message to encode
+'''
+def encode(key, message):
+    numbers = []
+    numbers.extend(range(0, 64))
+    letters = list(string.ascii_letters)
+    letters.append(' ')
+    for i in range(9):
+        letters.append(str(i))
+    letters.append('-')
+    letters.append(':')
+
+    keyLength = len(key)
+    print(len(letters) == len(numbers))
+    output = ''
+    # runs for length of input string
+    for i in range(len(message)):
+        letter = message[i]
+        findLetter = True
+        x = 0
+        # finds letter
+        while findLetter:
+            if letter == letters[x]:
+                # gets corresponding number to letter
+                number = numbers[x]
+                # gets corresponding key to position in computer
+                specKey = key[i % keyLength]
+                # finds the new number based on key
+                newNumber = (number + specKey) % 64
+                # adds corresponding letter to output
+                output = output + letters[newNumber]
+                findLetter = False
+            else:
+                x = x + 1
+    return output
+
+'''
+Decodes one-time-pad vignere ciphers
+Returns: String of decoded information
+
+key: key used to decrypt message
+ciphertext: ciphertext to dcode
+'''
+def decrypt(key, ciphertext):
+    numbers = []
+    numbers.extend(range(0, 64))
+    letters = list(string.ascii_letters)
+    letters.append(' ')
+    for i in range(9):
+        letters.append(str(i))
+    letters.append('-')
+    letters.append(':')
+
+    output = ''
+    #runs for each letter of the ciphertext
+    for i in range(len(ciphertext)):
+        letter = ciphertext[i]
+        findLetter = True
+        x = 0
+        #finds the corresponding number to the ciphertext letter
+        while findLetter:
+            if letter == letters[x]:
+                number = numbers[x]
+                specKey = key[i]
+                #does the opposite interaction as the encode
+                newNumber = (number - specKey) % 64
+
+                output = output + letters[newNumber]
+
+                findLetter = False
+            else:
+                x = x + 1
+
+    return output
+
+'''
+Generates the key for the vignere cipher
+Returns: List representing the key
+
+length: Int value of the length of the key
+'''
+def keyGen(length):
+    key = []
+    for i in range(length):
+        number = random.randint(0, 63)
+        key.append(number)
+    return key
+
+'''
+Turns the alphabetical key into numbers
+Returns: List of numbers representing the key
+
+stringKey: String value of the key
+'''
+def stringToNumKey(stringKey):
+    numbers = []
+    numbers.extend(range(0,64))
+    letters = list(string.ascii_letters)
+    letters.append(' ')
+    for i in range(9):
+        letters.append(str(i))
+    letters.append('-')
+    letters.append(':')
+
+    key = []
+    for i in range(len(stringKey)):
+        letter = stringKey[i]
+        findLetter = True
+        x = 0
+        while findLetter:
+            if letter == letters[x]:
+                number = numbers[x]
+                key.append(number)
+                findLetter = False
+            else:
+                x = x + 1
+    return key
+
+
+'''
+Turns the numerical key into a string of alphabetical letters
+Returns: String representing the key
+
+key: List of numbers representing the key
+'''
+def numToStringKey(key):
+    letters = list(string.ascii_letters)
+    letters.append(' ')
+    for i in range(9):
+        letters.append(str(i))
+    letters.append('-')
+    letters.append(':')
+    output = ''
+    for i in range(len(key)):
+        num = key[i]
+        output = output + letters[num]
+    return output
+
+
+'''
+Makes a random string of characters based on a length
+Returns: String of random characters
+
+length: Int value of length of string
+'''
+def randomstring(length):
+    letters = list(string.ascii_letters)
+    letters.append(' ')
+    for i in range(9):
+        letters.append(str(i))
+    letters.append('-')
+    letters.append(':')
+
+    output = ''
+    for i in range(length):
+        number = random.randint(0,63)
+        output = output + letters[number]
+    return output
+
+'''
+Finds and returns an encoded string value based on the length of the string
+Returns: encoded String value
+
+line: full length string to be parsed
+'''
+def findString(line):
+    length = ''
+    x = 0
+    #Finds the length of the wanted string
+    while line[x] != ',':
+        length = length + line[x]
+        x = x + 1
+    length = int(length)
+    newString = ''
+    #Removes the length part of the string from the string
+    for i in range(x + 1, len(line)):
+        newString = newString + line[i]
+    output = ''
+    #finds the wanted part of the string from the remaining string
+    for i in range(0, length):
+        output = output + newString[i]
+    return output
+
