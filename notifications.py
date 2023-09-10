@@ -25,18 +25,19 @@ def runNotif(list, length, timeZone, notifTimes, runAlready):
     for i in range(length):
         prio = mark.getPrio()
         deadline = mark.getDeadline()
-        print(runAlready)
+        #print(runAlready)
         #If the deadline is after the current time, the final notification pops
         if deadline <= currentTime:
-            notif = Toast("SimpleMark", "Mark", ActivationType="protocol", Duration="long")
-            cwd = os.getcwd()
-            logo = cwd + "\\logo.png"
-            #notif.add_image("logo")
-            notif.add_text("Mark Deadline Reached")
-            notif.add_text("{} has reached deadline from list {}".format(mark.getName(), list.getName()))
-            notif.show()
-            for x in range(4):
-                runAlready[i + x] = True
+            if runAlready[i * 5] == False:
+                notif = Toast("SimpleMark", "Mark", ActivationType="protocol", Duration="long")
+                cwd = os.getcwd()
+                logo = cwd + "\\logo.png"
+                #notif.add_image("logo")
+                notif.add_text("Mark Deadline Reached")
+                notif.add_text("{} has reached deadline from list {}".format(mark.getName(), list.getName()))
+                notif.show()
+                for x in range(4):
+                    runAlready[(i * 5) + x] = True
         else:
             #Reminder notification
             currentRunAlready = []
@@ -73,6 +74,7 @@ deadline: time value of mark's deadline
 notifLength: list of reminder lengths (from config file)
 prio: int priority of the mark
 runAlready: Boolean list if the notif for that prio has run already
+currentTime: Datetime object representing the current time
 '''
 def checkRemindTime(deadline, notifLength, prio, runAlready, currentTime):
 

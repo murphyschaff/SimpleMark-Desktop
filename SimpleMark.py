@@ -26,13 +26,20 @@ class App(tk.Tk):
     def on_exit(self):
         global notifRun
         name = self.wm_title()
-        print(name != "SimpleMark")
         if name != "SimpleMark" and name != "SimpleMark: Edit Config" and name != "SimpleMark: Create List":
             tk.messagebox.showinfo("SimpleMark", "Please close list before closing SimpleMark.")
         else:
             if tk.messagebox.askyesno("SimpleMark", "Are you sure you want to exit SimpleMark?"):
                 self.destroy()
                 notifRun = False
+    '''
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    PAGES
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    '''
+    '''
+    Main page of the program, what shows up when opened
+    '''
     def mainPage(self):
         mainFrame = tk.Frame()
         mainFrame.pack()
@@ -180,7 +187,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.deleteFrame(createFrame, [True,])
+            command=lambda: self.deleteFrame(createFrame, [True, '**&&^%$'])
         )
 
         # adding objects to frame
@@ -272,7 +279,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.deleteFrame(configFrame, [True,])
+            command=lambda: self.deleteFrame(configFrame, [True, '**&&^%$'])
         )
         # inserting information
         timezoneEntry.insert(0, configData[0])
@@ -330,7 +337,7 @@ class App(tk.Tk):
         listLabel = tk.Label(
             master=listFrame,
             text=listString,
-            width=50
+            width=100
         )
         listLabel.pack()
 
@@ -382,7 +389,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.deleteFrame(listFrame, [True,])
+            command=lambda: self.deleteFrame(listFrame, [True, list.getName()])
         )
         # Information Text Box
         markEntryLabel = tk.Label(master=listFrame, text="Add name of object to edit/delete")
@@ -429,6 +436,8 @@ class App(tk.Tk):
         if option == 0:
             changeType = "Add"
             showFrame = True
+            newTitle = "SimpleMark List: {}; {} Mark".format(list.getName(), changeType)
+            self.title(newTitle)
         else:
             changeType = 'Edit'
             mark = list.findMark(searchMarkName)
@@ -440,6 +449,8 @@ class App(tk.Tk):
                 color = mark.getColor()
                 buttonText = 'Save Changes'
                 showFrame = True
+                newTitle = "SimpleMark List: {}; {} Mark".format(list.getName(), changeType)
+                self.title(newTitle)
             else:
                 if searchMarkName == '':
                     tk.messagebox.showerror(title="SimpleMark", message="Please enter the name of a mark to edit")
@@ -449,7 +460,6 @@ class App(tk.Tk):
 
         editMarkFrame = tk.Frame()
         editMarkFrame.pack()
-
         # creation of labels
         titleLabel = tk.Label(master=editMarkFrame, text="{} Mark: {}".format(changeType, name))
         nameLabel = tk.Label(master=editMarkFrame, text="Mark Name")
@@ -500,19 +510,19 @@ class App(tk.Tk):
         hrMenu = OptionMenu(editMarkFrame, hrType, *hrTypeO)
 
         # adding details if the mark already exists
-        if option == 1:
-            deadlineList = datetimeToList(deadline)
+        if showFrame:
+            if option == 1:
+                deadlineList = datetimeToList(deadline)
+                nameBox.insert(0, "{}".format(name))
+                descriptionBox.insert(0, "{}".format(details))
+                yearBox.insert(0, "{}".format(deadlineList[0]))
+                hrBox.insert(0, "{}".format(deadlineList[3]))
+                minBox.insert(0, "{}".format(deadlineList[4]))
+                colorBox.insert(0, "{}".format(color))
 
-            nameBox.insert(0, "{}".format(name))
-            descriptionBox.insert(0, "{}".format(details))
-            yearBox.insert(0, "{}".format(deadlineList[0]))
-            hrBox.insert(0, "{}".format(deadlineList[3]))
-            minBox.insert(0, "{}".format(deadlineList[4]))
-            colorBox.insert(0, "{}".format(color))
-
-            monthType.set(deadlineList[1])
-            dayType.set(deadlineList[2])
-            hrType.set(deadlineList[5])
+                monthType.set(deadlineList[1])
+                dayType.set(deadlineList[2])
+                hrType.set(deadlineList[5])
 
         # button definitions
         saveMarkButton = tk.Button(
@@ -533,7 +543,7 @@ class App(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.deleteFrame(editMarkFrame, [False])
+            command=lambda: self.cancelEditMark(editMarkFrame,[False], list.getName())
         )
 
         if showFrame:
@@ -571,11 +581,22 @@ class App(tk.Tk):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     '''
     '''
+    Changes name of window title to prevent bug
+    
+    frame: Tk frame for editMark
+    openMain: list used in delete frame
+    listName: name of the list for title
+    '''
+    def cancelEditMark(self, frame, openMain, listName):
+        newTitle = "SimpleMark List: {}".format(listName)
+        self.title(newTitle)
+        self.deleteFrame(frame, openMain)
+    '''
     Updates the list after a change was made
     list: List object needed to be updated
     frame: Tk frame editMarkClass
     mainFrame: Tk Frame holding the create and open buttons
-        '''
+    '''
     def openListFromFile(self, file, mainFrame):
 
         if os.path.exists(file) and os.path.isfile(file):
@@ -638,8 +659,7 @@ class App(tk.Tk):
                 saveList(list)
 
                 self.updateList(list)
-        else:
-            tk.messagebox.showerror(title="SimpleMark", message="Please enter a number for a deadline")
+
     '''
     removes item from list
     markName: String name of mark to be removed
@@ -689,7 +709,7 @@ class App(tk.Tk):
             if check2:
                 print("Deleted list {} from {}".format(list.getName(), file))
                 os.remove(file)
-                self.deleteFrame(listFrame, [True,])
+                self.deleteFrame(listFrame, [True, '**&&^%$'])
 
     '''
     Saves the config data to file and updates it
@@ -701,7 +721,6 @@ class App(tk.Tk):
     def saveConfigData(self, configData, configFrame, remindTime):
         #data starts at index 7
         options = configFrame.winfo_children()
-        print(options)
 
         timezone = options[8].get()
         prio1 = options[9].get()
@@ -729,7 +748,7 @@ class App(tk.Tk):
 
             saveConfig(configData)
 
-            self.deleteFrame(configFrame, [True,])
+            self.deleteFrame(configFrame, [True, "**&^%$#"])
             print("Config Data saved")
 
         else:
@@ -743,9 +762,19 @@ class App(tk.Tk):
     def deleteFrame(self, frame, openMain):
         global notifRun
         notifRun = False
-        frame.destroy()
         if openMain[0]:
-            self.mainPage()
+            title = self.wm_title()
+            check1Title = "SimpleMark List: {}; Add Mark".format(openMain[1])
+            check2Title = "SimpleMark List: {}; Edit Mark".format(openMain[1])
+            if title == check1Title:
+                tk.messagebox.showerror('SimpleMark', 'Please close Add Mark before closing List.')
+            elif title == check2Title:
+                tk.messagebox.showerror('SimpleMark', 'Please close Edit Mark before closing List.')
+            else:
+                self.mainPage()
+                frame.destroy()
+        else:
+            frame.destroy()
 
     '''
     Clears the frame that is sent to the function of objects
@@ -763,7 +792,6 @@ class App(tk.Tk):
     def saveAndOpenList(self,frame, prioType, month, day, hrType):
         # starts at index 13
         objects = frame.winfo_children()
-        print(objects)
         listName = objects[13]
         markName = objects[15]
         markDetails = objects[14]
@@ -784,15 +812,19 @@ class App(tk.Tk):
         if listName == '' or markName == '' or markDetails == '' or year == '' or hr == '' or min == '' or markColor == '':
             tk.messagebox.showerror(title="SimpleMark", message="Please enter all information")
         else:
-            time = createDatetime(year, month, day, hr, min, hrType, configData)
-            if time is not None:
-                #creates mark and list objects, and saves them to a new file
-                mark = Mark(markName, markDetails, time, markPrio, markColor)
-                list = List(listName, mark)
-                file = saveList(list)
+            exists = checkFile(listName)
+            if exists:
+                tk.messagebox.showerror(title="SimpleMark", message="Name '{}' already used in list.".format(listName))
+            else:
+                time = createDatetime(year, month, day, hr, min, hrType, configData)
+                if time is not None:
+                    #creates mark and list objects, and saves them to a new file
+                    mark = Mark(markName, markDetails, time, markPrio, markColor)
+                    list = List(listName, mark)
+                    file = saveList(list)
 
-                self.openListFromFile(file, None)
-                self.deleteFrame(frame, [False])
+                    self.openListFromFile(file, None)
+                    self.deleteFrame(frame, [False])
 
     '''
     Runs reminders when list is open, cancels run when list is closed
@@ -805,7 +837,7 @@ class App(tk.Tk):
         checkTime = configData[7]
         timeZone = configData[0]
         notifTimes = [configData[2], configData[3], configData[4], configData[5], configData[6]]
-        print(notifTimes)
+
         listLength = list.getLength()
 
         #Finding if notif has already been run for each variable
@@ -841,7 +873,7 @@ class App(tk.Tk):
             else:
                 time.sleep(checkTime)
         print("thread exit run")
-        exit()
+        return
 
 
 '''

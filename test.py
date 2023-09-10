@@ -7,6 +7,9 @@ from notifications import *
 from miscFunctions import *
 
 #print(list(range(0,10)))
+hex = inttohex(15)
+print(hex)
+print(hextoint(hex))
 message = "hit0:- e"
 key = [1,2,3,4,5,6,7,8]
 encoded = encode(key, message)
@@ -18,6 +21,7 @@ encoded = encode(key, message)
 print(encoded)
 print(decrypt(key, encoded))
 
+'''
 print(key)
 stringKey = numToStringKey(key)
 print(stringKey)
@@ -28,6 +32,7 @@ print(findString(stringm))
 stringn = "bobuncle"
 print(stringn + randomstring(5))
 print(list(range(1,5)))
+'''
 
 
 

@@ -3,6 +3,7 @@ import tkinter as tk
 import re
 import string
 import random
+import os
 '''
 Takes given data and converts into datetime.datetime object
 Returns: Datetime.datetime object, None if invalid date
@@ -28,9 +29,9 @@ def createDatetime(year, monthTxt, day, hr, min, hrType, configData):
 
     #Basic Value checking
     if not isint(year):
-        tk.messagebox.showerror(title="SimpleMark", message="Please enter a valid year (integer value)")
+        tk.messagebox.showerror(title="SimpleMark", message="Please enter a valid year value")
     elif not isint(hr) and 0 < hr < 13:
-        tk.messagebox.showerror(title="SimpleMark", message="Please enter a valid hour")
+        tk.messagebox.showerror(title="SimpleMark", message="Please enter a valid hour value")
     elif not isint(min) and 0 < min < 60:
         tk.messagebox.showerror(title="SimpleMark", message="Please enter a valid minute value")
     else:
@@ -149,16 +150,16 @@ message: Message to encode
 '''
 def encode(key, message):
     numbers = []
-    numbers.extend(range(0, 64))
+    numbers.extend(range(0, 65))
     letters = list(string.ascii_letters)
     letters.append(' ')
     for i in range(9):
         letters.append(str(i))
     letters.append('-')
     letters.append(':')
+    letters.append('.')
 
     keyLength = len(key)
-    print(len(letters) == len(numbers))
     output = ''
     # runs for length of input string
     for i in range(len(message)):
@@ -173,7 +174,7 @@ def encode(key, message):
                 # gets corresponding key to position in computer
                 specKey = key[i % keyLength]
                 # finds the new number based on key
-                newNumber = (number + specKey) % 64
+                newNumber = (number + specKey) % 65
                 # adds corresponding letter to output
                 output = output + letters[newNumber]
                 findLetter = False
@@ -190,13 +191,14 @@ ciphertext: ciphertext to dcode
 '''
 def decrypt(key, ciphertext):
     numbers = []
-    numbers.extend(range(0, 64))
+    numbers.extend(range(0, 65))
     letters = list(string.ascii_letters)
     letters.append(' ')
     for i in range(9):
         letters.append(str(i))
     letters.append('-')
     letters.append(':')
+    letters.append('.')
 
     output = ''
     #runs for each letter of the ciphertext
@@ -210,7 +212,7 @@ def decrypt(key, ciphertext):
                 number = numbers[x]
                 specKey = key[i]
                 #does the opposite interaction as the encode
-                newNumber = (number - specKey) % 64
+                newNumber = (number - specKey) % 65
 
                 output = output + letters[newNumber]
 
@@ -229,7 +231,9 @@ length: Int value of the length of the key
 def keyGen(length):
     key = []
     for i in range(length):
-        number = random.randint(0, 63)
+        number = random.randint(0, 64)
+        if i == 0 and number == 52:
+            number = number + 1
         key.append(number)
     return key
 
@@ -241,13 +245,14 @@ stringKey: String value of the key
 '''
 def stringToNumKey(stringKey):
     numbers = []
-    numbers.extend(range(0,64))
+    numbers.extend(range(0,65))
     letters = list(string.ascii_letters)
     letters.append(' ')
     for i in range(9):
         letters.append(str(i))
     letters.append('-')
     letters.append(':')
+    letters.append('.')
 
     key = []
     for i in range(len(stringKey)):
@@ -277,6 +282,7 @@ def numToStringKey(key):
         letters.append(str(i))
     letters.append('-')
     letters.append(':')
+    letters.append('.')
     output = ''
     for i in range(len(key)):
         num = key[i]
@@ -297,10 +303,11 @@ def randomstring(length):
         letters.append(str(i))
     letters.append('-')
     letters.append(':')
+    letters.append('.')
 
     output = ''
     for i in range(length):
-        number = random.randint(0,63)
+        number = random.randint(0,64)
         output = output + letters[number]
     return output
 
@@ -309,18 +316,12 @@ Finds and returns an encoded string value based on the length of the string
 Returns: encoded String value
 
 line: full length string to be parsed
+length: length of wanted string
 '''
-def findString(line):
-    length = ''
-    x = 0
-    #Finds the length of the wanted string
-    while line[x] != ',':
-        length = length + line[x]
-        x = x + 1
-    length = int(length)
+def findString(line, length):
     newString = ''
     #Removes the length part of the string from the string
-    for i in range(x + 1, len(line)):
+    for i in range(3, len(line)):
         newString = newString + line[i]
     output = ''
     #finds the wanted part of the string from the remaining string
@@ -328,3 +329,83 @@ def findString(line):
         output = output + newString[i]
     return output
 
+'''
+Converts an integer value to a 3 bix hex string
+Returns: String value representing hex
+
+value: Integer value to be converted
+'''
+def inttohex(value):
+    remainders = []
+    holdDiv = int(value / 16)
+    remainders.append(value % 16)
+    value = holdDiv
+
+    if value == 0:
+        remainders.append(0)
+        remainders.append(0)
+    else:
+        holdDiv = int(value / 16)
+        remainders.append(value % 16)
+        value = holdDiv
+        if value == 0:
+            remainders.append(0)
+        else:
+            remainders.append(value % 16)
+
+
+    output = ''
+    hex = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']
+    for i in range(len(remainders)):
+        output = output + hex[remainders[(len(remainders) - 1) - i]]
+    type(output)
+    return output
+
+'''
+Converts 3 char string hex value into an integer object
+Returns: Integer value representation
+
+string: String value of 3 chars
+'''
+def hextoint(string):
+    hex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']
+    output = 0
+    for i in range(len(string)):
+        char = string[i]
+        findValue = True
+        x = 0
+        while findValue:
+            if char == hex[x]:
+                findValue = False
+                output = output + (x * (16 ** (len(string) - (i+1))))
+                #print('{} {}'.format(x,(16 ** (len(string) - (i+1)))))
+            else:
+                x = x + 1
+    return output
+
+'''
+Checks for existence of file already
+Returns: True if list exists, False if not
+
+name: Name of thing to be checked for
+'''
+def checkFile(name):
+    cwd = os.getcwd()
+    dir = cwd + "\\ListData"
+    files = os.listdir(dir)
+    names = []
+    paths = []
+    exists = False
+
+    for i in range(len(files)):
+        path = dir + "\\" + files[i]
+        if os.path.exists(path) and os.path.isfile(path):
+            check = open(path, 'r')
+            watermark = check.readline()
+            watermark = watermark.strip()
+            if watermark == "SimpleMarkListType":
+                listName = check.readline()
+                listName = listName.strip()
+                if listName == name:
+                    exists = True
+    return exists

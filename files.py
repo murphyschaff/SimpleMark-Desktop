@@ -31,31 +31,37 @@ def saveList(list):
             deadline = str(deadline)
             prio = mark.getPrio()
             color = mark.getColor()
+            #Adding length to string
+            name = inttohex(len(name)) + name
+            details = inttohex(len(details)) + details
+            deadline = inttohex(len(deadline)) + deadline
+            prio = inttohex(1) + str(prio)
+            color = inttohex(len(color)) + color
             #Keys for encoding
             namek = keyGen(len(name))
             detailsk = keyGen(len(details))
             deadlinek = keyGen(len(deadline))
-            priok = keyGen(1)
+            priok = keyGen(len(prio))
             colork = keyGen(len(color))
-            #finding largest length string
+            # finding largest length string
             lengths = [len(name), len(details), len(deadline), 1, len(color)]
             largestLength = lengths[i]
             for i in range(len(lengths)):
                 if lengths[i] > largestLength:
                     largestLength = lengths[i]
             #encodes the details for each mark before printing to file
-            encodedName = str(len(name)) + ',' + encode(namek, name) + randomstring(largestLength - len(name))
-            encodedDetails = str(len(details)) + ',' + encode(detailsk, details) + randomstring(largestLength - len(details))
-            encDeadline = str(len(deadline))+ ',' + encode(deadlinek, deadline) + randomstring(largestLength - len(deadline))
-            encodedPrio = '1,' + encode(priok, str(prio)) + randomstring(largestLength - 1)
-            encodedColor = str(len(color)) + ',' + encode(colork, color) + randomstring(largestLength - len(color))
-            print('{} {} {} {} {}'.format(encodedName, encodedDetails, encDeadline, encodedPrio, encodedColor))
+            encodedName = encode(namek, name) + randomstring(largestLength - len(name))
+            encodedDetails =encode(detailsk, details) + randomstring(largestLength - len(details))
+            encDeadline =encode(deadlinek, deadline) + randomstring(largestLength - len(deadline))
+            encodedPrio =encode(priok, prio) + randomstring(largestLength - len(prio))
+            encodedColor = encode(colork, color) + randomstring(largestLength - len(color))
+            #print('{} {} {} {} {}'.format(encodedName, encodedDetails, encDeadline, encodedPrio, encodedColor))
             #turning key into text
-            namek = str(len(namek)) + ',' + numToStringKey(namek) + randomstring(largestLength - len(namek))
-            detailsk = str(len(detailsk))+ ',' + numToStringKey(detailsk) + randomstring(largestLength - len(detailsk))
-            deadlinek = str(len(deadlinek)) + ',' + numToStringKey(deadlinek) + randomstring(largestLength - len(deadlinek))
-            priok = '1,' + numToStringKey(priok) + randomstring(largestLength - 1)
-            colork = str(len(colork)) + ',' + numToStringKey(colork) + randomstring(largestLength - len(colork))
+            namek = numToStringKey(namek) + randomstring(largestLength - len(namek))
+            detailsk = numToStringKey(detailsk) + randomstring(largestLength - len(detailsk))
+            deadlinek = numToStringKey(deadlinek) + randomstring(largestLength - len(deadlinek))
+            priok = numToStringKey(priok) + randomstring(largestLength - len(prio))
+            colork = numToStringKey(colork) + randomstring(largestLength - len(colork))
 
             file.write('{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n'.format(encodedName,namek, encodedDetails, detailsk,
                                                                          encDeadline, deadlinek, encodedPrio, priok,
@@ -110,17 +116,25 @@ def openList(path):
             color = color.strip()
             colork = colork.strip()
 
+            #finding lengths
+            namel = hextoint(decrypt(stringToNumKey(namek[0:3]), name[0:3]))
+            detailsl = hextoint(decrypt(stringToNumKey(detailsk[0:3]), details[0:3]))
+            deadlinel = hextoint(decrypt(stringToNumKey(deadlinek[0:3]), deadline[0:3]))
+            #print('{} {}'.format(stringToNumKey(priok[0:3]),decrypt(stringToNumKey(priok[0:3]), prio[0:3]) ))
+            priol = hextoint(decrypt(stringToNumKey(priok[0:3]), prio[0:3]))
+            colorl = hextoint(decrypt(stringToNumKey(colork[0:3]), color[0:3]))
+
             #finding true values of each line
-            name = findString(name)
-            namek = findString(namek)
-            details = findString(details)
-            detailsk = findString(detailsk)
-            deadline = findString(deadline)
-            deadlinek = findString(deadlinek)
-            prio = findString(prio)
-            priok = findString(priok)
-            color = findString(color)
-            colork = findString(colork)
+            name = findString(name, namel)
+            namek = findString(namek, namel)
+            details = findString(details, detailsl)
+            detailsk = findString(detailsk, detailsl)
+            deadline = findString(deadline, deadlinel)
+            deadlinek = findString(deadlinek, deadlinel)
+            prio = findString(prio, priol)
+            priok = findString(priok, priol)
+            color = findString(color, colorl)
+            colork = findString(colork, colorl)
             #decoding message: turning key into numbers
             namek = stringToNumKey(namek)
             detailsk = stringToNumKey(detailsk)
@@ -165,18 +179,25 @@ def openList(path):
                 color = color.strip()
                 colork = colork.strip()
 
-                # finding true values of each line
-                name = findString(name)
-                namek = findString(namek)
-                details = findString(details)
-                detailsk = findString(detailsk)
-                deadline = findString(deadline)
-                deadlinek = findString(deadlinek)
-                prio = findString(prio)
-                priok = findString(priok)
-                color = findString(color)
-                colork = findString(colork)
+                # finding lengths
+                namel = hextoint(decrypt(stringToNumKey(namek[0:3]), name[0:3]))
+                detailsl = hextoint(decrypt(stringToNumKey(detailsk[0:3]), details[0:3]))
+                deadlinel = hextoint(decrypt(stringToNumKey(deadlinek[0:3]), deadline[0:3]))
+                #print('{} {}'.format(stringToNumKey(priok[0:3]),decrypt(stringToNumKey(priok[0:3]), prio[0:3]) ))
+                priol = hextoint(decrypt(stringToNumKey(priok[0:3]), prio[0:3]))
+                colorl = hextoint(decrypt(stringToNumKey(colork[0:3]), color[0:3]))
 
+                # finding true values of each line
+                name = findString(name, namel)
+                namek = findString(namek, namel)
+                details = findString(details, detailsl)
+                detailsk = findString(detailsk, detailsl)
+                deadline = findString(deadline, deadlinel)
+                deadlinek = findString(deadlinek, deadlinel)
+                prio = findString(prio, priol)
+                priok = findString(priok, priol)
+                color = findString(color, colorl)
+                colork = findString(colork, colorl)
                 # decoding message: turning key into numbers
                 namek = stringToNumKey(namek)
                 detailsk = stringToNumKey(detailsk)
@@ -188,6 +209,7 @@ def openList(path):
                 name = decrypt(namek, name)
                 details = decrypt(detailsk, details)
                 deadline = decrypt(deadlinek, deadline)
+                deadline = translateDatetime(deadline)
                 prio = decrypt(priok, prio)
                 color = decrypt(colork, color)
 
