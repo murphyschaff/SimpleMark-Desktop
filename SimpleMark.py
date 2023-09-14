@@ -832,6 +832,7 @@ class SimpleMark(tk.Tk):
     window: window object
     '''
     def reminders(self,list):
+        time.sleep(configData[7])
         global notifRun
         notifRun = True
         checkTime = configData[7]

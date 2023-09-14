@@ -153,7 +153,7 @@ def encode(key, message):
     numbers.extend(range(0, 65))
     letters = list(string.ascii_letters)
     letters.append(' ')
-    for i in range(9):
+    for i in range(10):
         letters.append(str(i))
     letters.append('-')
     letters.append(':')
@@ -194,7 +194,7 @@ def decrypt(key, ciphertext):
     numbers.extend(range(0, 65))
     letters = list(string.ascii_letters)
     letters.append(' ')
-    for i in range(9):
+    for i in range(10):
         letters.append(str(i))
     letters.append('-')
     letters.append(':')
@@ -248,7 +248,7 @@ def stringToNumKey(stringKey):
     numbers.extend(range(0,65))
     letters = list(string.ascii_letters)
     letters.append(' ')
-    for i in range(9):
+    for i in range(10):
         letters.append(str(i))
     letters.append('-')
     letters.append(':')
@@ -278,7 +278,7 @@ key: List of numbers representing the key
 def numToStringKey(key):
     letters = list(string.ascii_letters)
     letters.append(' ')
-    for i in range(9):
+    for i in range(10):
         letters.append(str(i))
     letters.append('-')
     letters.append(':')
@@ -299,7 +299,7 @@ length: Int value of length of string
 def randomstring(length):
     letters = list(string.ascii_letters)
     letters.append(' ')
-    for i in range(9):
+    for i in range(10):
         letters.append(str(i))
     letters.append('-')
     letters.append(':')
