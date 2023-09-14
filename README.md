@@ -3,19 +3,20 @@ Application created by Murphy Schaff
 
 What: A Python based Reminders applicaiton for Windows Desktop.
 
-![simpleMark list example](https://github.com/murphyschaff/SimpleMark-Desktop/assets/97986240/37a3f360-36dd-459f-b433-3cca8fdad572)
+![image](https://github.com/murphyschaff/SimpleMark-Desktop/assets/97986240/f1b55f00-dbc3-4ee7-af8b-ccd3286f47ff)
 
-![notification example](https://github.com/murphyschaff/SimpleMark-Desktop/assets/97986240/3eff4b45-b787-4a35-b140-8a5068d79205)
+![image](https://github.com/murphyschaff/SimpleMark-Desktop/assets/97986240/f116910b-08f3-44f9-a1d9-5356d41bd999)
 
 Requirements:
 - Windows 10 or newer
-- Python3 with windowstoast installed
+- Python3.10 or newer with windowstoast installed
 
 
 How to Install:
 - Make sure Python3 is installed with windowstoast
+    - Python3 can be installed through the Microsoft Store, by searching "Python"
     - Windows toast can be installed through 'pip install windowstoast' in a command prompt window
 - Clone Repository
-![image](https://github.com/murphyschaff/SimpleMark-Desktop/assets/97986240/f8d9a1ea-812c-4d44-a86c-ff8d5206b3c6)
-- Run 'SimpleMark Installer' shortcut and follow installer instructions
+![image](https://github.com/murphyschaff/SimpleMark-Desktop/assets/97986240/0dc58088-492c-4349-b1d4-79478b4e70c5)
+- You can either run SimpleMark from git clone, this will include some test data, or run the 'SimpleMark Installer' shortcut to install a fresh version of the software.
 
