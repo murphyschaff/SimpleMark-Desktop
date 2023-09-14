@@ -122,62 +122,65 @@ class Installer(tk.Tk):
             tk.messagebox.showerror('SimpleMark Installer', 'You must provide data for all types')
         else:
             if isint(n1) and isint(n2) and isint(n3) and isint(n4) and isint(n5):
-                if os.path.exists(installL) and os.path.isdir(installL):
-                    #checks and sees if the SimpleMark Desktop file already exists at location
-                    dirCont = os.listdir(installL)
-                    majorFiles = 0
-                    for i in dirCont:
-                        if i == 'SimpleMark Desktop':
-                            majorFiles = 1
-                    if majorFiles == 0:
-                        if tk.messagebox.askyesno('SimpleMark Installer',
-                                                  'Are you sure you want to install SimpleMark with '
-                                                  'the following attributes:'
-                                                  '\nInstaller Location: {}\n'
-                                                  'Timezone: {}\n'
-                                                  'Notification Time for Priority 1: {} s\n'
-                                                  'Notification Time for Priority 2: {} s\n'
-                                                  'Notification Time for Priority 3: {} s\n'
-                                                  'Notification Time for Priority 4: {} s\n'
-                                                  'Notification Time for Priority 5: {} s\n'
-                                                  'Timezone and Priority values can be changed later'.format(
-                                                      installL, timezone, n1, n2, n3, n4, n5)):
-                            mainFile = installL + "\\SimpleMark Desktop"
-                            os.mkdir(mainFile)
-                            #Making Configuration File
-                            configDir = mainFile + "\\config"
-                            os.mkdir(configDir)
-                            configFile = open(configDir + "\\config.txt", 'w')
-                            configFile.write("TimeZone: {}\n".format(timezone))
-                            configFile.write("Previous List: {}\n".format(''))
-                            configFile.write("Notif for prio 1: {}\n".format(n1))
-                            configFile.write("Notif for prio 2: {}\n".format(n2))
-                            configFile.write("Notif for prio 3: {}\n".format(n3))
-                            configFile.write("Notif for prio 4: {}\n".format(n4))
-                            configFile.write("Notif for prio 5: {}\n".format(n5))
-                            configFile.write("Time between reminder check: {}\n".format(remindVal))
-                            configFile.close()
+                if int(n1) > 0 and int(n2) > 0 and int(n3) > 0 and int(n4) > 0 and int(n5) > 0:
+                    if os.path.exists(installL) and os.path.isdir(installL):
+                        #checks and sees if the SimpleMark Desktop file already exists at location
+                        dirCont = os.listdir(installL)
+                        majorFiles = 0
+                        for i in dirCont:
+                            if i == 'SimpleMark Desktop':
+                                majorFiles = 1
+                        if majorFiles == 0:
+                            if tk.messagebox.askyesno('SimpleMark Installer',
+                                                      'Are you sure you want to install SimpleMark with '
+                                                      'the following attributes:'
+                                                      '\nInstaller Location: {}\n'
+                                                      'Timezone: {}\n'
+                                                      'Notification Time for Priority 1: {} s\n'
+                                                      'Notification Time for Priority 2: {} s\n'
+                                                      'Notification Time for Priority 3: {} s\n'
+                                                      'Notification Time for Priority 4: {} s\n'
+                                                      'Notification Time for Priority 5: {} s\n'
+                                                      'Timezone and Priority values can be changed later'.format(
+                                                          installL, timezone, n1, n2, n3, n4, n5)):
+                                mainFile = installL + "\\SimpleMark Desktop"
+                                os.mkdir(mainFile)
+                                #Making Configuration File
+                                configDir = mainFile + "\\config"
+                                os.mkdir(configDir)
+                                configFile = open(configDir + "\\config.txt", 'w')
+                                configFile.write("TimeZone: {}\n".format(timezone))
+                                configFile.write("Previous List: {}\n".format(''))
+                                configFile.write("Notif for prio 1: {}\n".format(n1))
+                                configFile.write("Notif for prio 2: {}\n".format(n2))
+                                configFile.write("Notif for prio 3: {}\n".format(n3))
+                                configFile.write("Notif for prio 4: {}\n".format(n4))
+                                configFile.write("Notif for prio 5: {}\n".format(n5))
+                                configFile.write("Time between reminder check: {}\n".format(remindVal))
+                                configFile.close()
 
-                            #create List Directory
-                            os.mkdir(mainFile + '\\ListData')
+                                #create List Directory
+                                os.mkdir(mainFile + '\\ListData')
 
-                            #copying all proper files to main file
-                            cwd = os.getcwd()
-                            shutil.copy('SimpleMark.py', mainFile)
-                            shutil.copy('notifications.py', mainFile)
-                            shutil.copy('miscFunctions.py', mainFile)
-                            shutil.copy('files.py', mainFile)
-                            shutil.copy('listmarkclass.py', mainFile)
-                            shutil.copy('SimpleMark Desktop.lnk', mainFile)
+                                #copying all proper files to main file
+                                cwd = os.getcwd()
+                                shutil.copy('SimpleMark.py', mainFile)
+                                shutil.copy('notifications.py', mainFile)
+                                shutil.copy('miscFunctions.py', mainFile)
+                                shutil.copy('files.py', mainFile)
+                                shutil.copy('listmarkclass.py', mainFile)
+                                shutil.copy('SimpleMark Desktop.lnk', mainFile)
 
-                            tk.messagebox.showinfo("SimpleMark Installer", 'SimpleMark has been installed at {}'
-                                                   .format(mainFile))
-                            self.destroy()
+                                tk.messagebox.showinfo("SimpleMark Installer", 'SimpleMark has been installed at {}'
+                                                       .format(mainFile))
+                                self.destroy()
+                        else:
+                            tk.messagebox.showerror('SimpleMark Installer',
+                                                    'It seems as though SimpleMark already exists at this location.')
                     else:
-                        tk.messagebox.showerror('SimpleMark Installer',
-                                                'It seems as though SimpleMark already exists at this location.')
+                        tk.messagebox.showerror('SimpleMark Installer', 'Please enter an valid directory')
                 else:
-                    tk.messagebox.showerror('SimpleMark Installer', 'Please enter an valid directory')
+                    tk.messagebox.showerror('SimpleMark Installer', 'Please enter a positive integer value for times')
             else:
                 tk.messagebox.showerror('SimpleMark Installer', 'Please enter an integer value for notif times')
 

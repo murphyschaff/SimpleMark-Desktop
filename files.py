@@ -15,13 +15,14 @@ def saveList(list):
     cwd = os.getcwd()
     directory = cwd + "\\ListData"
     watermark = "SimpleMarkListType"
+    warning = "WARNING! EDITING FILE CAN MAKE IT UNABLE TO BE READ."
     #Makes sure that the directory exists before adding file there
     if os.path.exists(directory):
         filePath = directory + "\\" + name + ".txt"
 
         file = open(filePath, 'w')
 
-        file.write('{}\n{}\n{}\n'.format(watermark, name, length))
+        file.write('{}\n{}\n{}\n{}\n'.format(watermark, warning, name, length))
         mark = list.getHead()
 
         for i in range(length):
@@ -88,6 +89,7 @@ def openList(path):
 
         #Makes sure the object is actually a simple mark list
         if watermark == check:
+            file.readline()
             listName = file.readline()
             listName = listName.strip()
             #finds length and defines regex to read from file

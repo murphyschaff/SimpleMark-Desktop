@@ -156,7 +156,9 @@ class List:
     def getName(self):
         return self.name
 
-
+    #changes the name of the list
+    def setName(self, name):
+        self.name = name
 
 
 class Mark:

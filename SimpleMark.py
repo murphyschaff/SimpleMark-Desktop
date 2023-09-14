@@ -315,7 +315,6 @@ class SimpleMark(tk.Tk):
     '''
 
     def updateList(self, list):
-
         listFrame = tk.Frame()
         listFrame.pack()
         self.title("SimpleMark List: {}".format(list.getName()))
@@ -372,7 +371,7 @@ class SimpleMark(tk.Tk):
             height=1,
             bg="black",
             fg='white',
-            command=lambda: self.deleteList(list, listFrame)
+            command=lambda: self.deleteList(list, listFrame, False)
         )
         editMarkButton = tk.Button(
             master=listFrame,
@@ -382,6 +381,15 @@ class SimpleMark(tk.Tk):
             bg="black",
             fg='white',
             command=lambda: self.editMark(markEntry.get(), list, 1, listFrame)
+        )
+        changeLNameButton = tk.Button(
+            master=listFrame,
+            text="Change List Name",
+            width=20,
+            height=1,
+            bg="black",
+            fg='white',
+            command=lambda: self.updateListName(list, markEntry.get(), listFrame)
         )
         backButton = tk.Button(
             master=listFrame,
@@ -404,6 +412,7 @@ class SimpleMark(tk.Tk):
         addItemButton.pack()
         removeItemButton.pack()
         editMarkButton.pack()
+        changeLNameButton.pack()
         removeListButton.pack()
         backButton.pack()
 
@@ -517,7 +526,10 @@ class SimpleMark(tk.Tk):
                 nameBox.insert(0, "{}".format(name))
                 descriptionBox.insert(0, "{}".format(details))
                 yearBox.insert(0, "{}".format(deadlineList[0]))
-                hrBox.insert(0, "{}".format(deadlineList[3]))
+                if int(deadlineList[3]) > 12:
+                    hrBox.insert(0, "{}".format(int(deadlineList[3]) - 12))
+                else:
+                    hrBox.insert(0, "{}".format(deadlineList[3]))
                 minBox.insert(0, "{}".format(deadlineList[4]))
                 #colorBox.insert(0, "{}".format(color))
 
@@ -582,6 +594,29 @@ class SimpleMark(tk.Tk):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     '''
     '''
+    Updates the name of the list
+    
+    list: list of which the name is to be updated
+    name: new name of the list
+    '''
+    def updateListName(self, list, name, frame):
+        #Makes sure the name entered is something, and that it is not the same as the current list name
+        if name != '':
+            if name != list.getName():
+                if tk.messagebox.askyesno('SimpleMark', 'Are you sure you want to change the list name from "{}" to "{}"'
+                                          .format(list.getName(), name)):
+                    self.deleteList(list, frame, True)
+                    list.setName(name)
+                    self.deleteFrame(frame, [False,])
+                    saveList(list)
+                    self.updateList(list)
+            else:
+                tk.messagebox.showinfo('SimpleMark', 'That is the current name of the list')
+        else:
+            tk.messagebox.showerror('SimpleMark', 'Please enter the new name of the list')
+
+
+    '''
     Changes name of window title to prevent bug
     
     frame: Tk frame for editMark
@@ -592,6 +627,8 @@ class SimpleMark(tk.Tk):
         newTitle = "SimpleMark List: {}".format(listName)
         self.title(newTitle)
         self.deleteFrame(frame, openMain)
+        global notifRun
+        notifRun = True
     '''
     Updates the list after a change was made
     list: List object needed to be updated
@@ -676,7 +713,7 @@ class SimpleMark(tk.Tk):
                                                message="Deleting Mark '{}' will also delete the list. Continue?"
                                                .format(mark.getName()))
                 if check:
-                    self.deleteList(list, listFrame)
+                    self.deleteList(list, listFrame, False)
             else:
                 check = tk.messagebox.askokcancel(title="SimpleMark", message="This will remove mark '{}' from list '{}'. "
                                                                               "Are you sure?"
@@ -698,19 +735,23 @@ class SimpleMark(tk.Tk):
     Deletes list and file from computer
     list: List object to be deleted
     listFrame: Tk Frame listFrame
+    changeName: Boolean if just the name was changed
     '''
-    def deleteList(self, list, listFrame):
+    def deleteList(self, list, listFrame, changeName):
 
         file = os.getcwd() + "\\ListData\\{}.txt".format(list.getName())
 
-        check1 = tk.messagebox.askyesno(title="SimpleMark", message="Are you sure you want to remove list '{}'?"
-                                        .format(list.getName()))
-        if check1:
-            check2 = tk.messagebox.askyesno(title="SimpleMark",message="Are you really sure?")
-            if check2:
-                print("Deleted list {} from {}".format(list.getName(), file))
-                os.remove(file)
-                self.deleteFrame(listFrame, [True, '**&&^%$'])
+        if not changeName:
+            check1 = tk.messagebox.askyesno(title="SimpleMark", message="Are you sure you want to remove list '{}'?"
+                                            .format(list.getName()))
+            if check1:
+                check2 = tk.messagebox.askyesno(title="SimpleMark",message="Are you really sure?")
+                if check2:
+                    print("Deleted list {} from {}".format(list.getName(), file))
+                    os.remove(file)
+                    self.deleteFrame(listFrame, [True, '**&&^%$'])
+        else:
+            os.remove(file)
 
     '''
     Saves the config data to file and updates it
@@ -732,25 +773,28 @@ class SimpleMark(tk.Tk):
 
         #Makes sure all entered times entered are integers
         if isint(prio1) and isint(prio2) and isint(prio3) and isint(prio4) and isint(prio5):
-            prio1 = int(prio1)
-            prio2 = int(prio2)
-            prio3 = int(prio3)
-            prio4 = int(prio4)
-            prio5 = int(prio5)
-            remindTime = int(remindTime)
+            if int(prio1) > 0 and int(prio2) > 0 and int(prio3) > 0 and int(prio4) > 0 and int(prio5) > 0:
+                prio1 = int(prio1)
+                prio2 = int(prio2)
+                prio3 = int(prio3)
+                prio4 = int(prio4)
+                prio5 = int(prio5)
+                remindTime = int(remindTime)
 
-            configData[0] = timezone
-            configData[2] = prio1
-            configData[3] = prio2
-            configData[4] = prio3
-            configData[5] = prio4
-            configData[6] = prio5
-            configData[7] = remindTime
+                configData[0] = timezone
+                configData[2] = prio1
+                configData[3] = prio2
+                configData[4] = prio3
+                configData[5] = prio4
+                configData[6] = prio5
+                configData[7] = remindTime
 
-            saveConfig(configData)
+                saveConfig(configData)
 
-            self.deleteFrame(configFrame, [True, "**&^%$#"])
-            print("Config Data saved")
+                self.deleteFrame(configFrame, [True, "**&^%$#"])
+                print("Config Data saved")
+            else:
+                tk.messagebox.showerror('SimpleMark', 'Please enter a positive integer value for times.')
 
         else:
             tk.messagebox.showerror(title="SimpleMark", message='All notif times must be numbers')
@@ -834,7 +878,12 @@ class SimpleMark(tk.Tk):
     def reminders(self,list):
         time.sleep(configData[7])
         global notifRun
-        notifRun = True
+        title = self.wm_title()
+        listTitle = "SimpleMark List: {}".format(list.getName())
+        check1Title = "SimpleMark List: {}; Add Mark".format(list.getName())
+        check2Title = "SimpleMark List: {}; Edit Mark".format(list.getName())
+        if title == listTitle or title == check1Title or title == check2Title:
+            notifRun = True
         checkTime = configData[7]
         timeZone = configData[0]
         notifTimes = [configData[2], configData[3], configData[4], configData[5], configData[6]]
@@ -867,13 +916,13 @@ class SimpleMark(tk.Tk):
 
         #runs while the list is open
         while notifRun:
-            print('checking notifs')
+            #print('checking notifs')
             stop = runNotif(list, list.getLength(), timeZone, notifTimes, runAlready)
             if stop:
                 notifRun = False
             else:
                 time.sleep(checkTime)
-        print("thread exit run")
+        #print("thread exit run")
         return
 
 

@@ -54,8 +54,10 @@ def createDatetime(year, monthTxt, day, hr, min, hrType, configData):
         if hrType == "PM":
             hr = hr + 12
         #Makes through all checks, makes a datetime object
-        if makeTime:
+        if makeTime and isdate(year, month, day, hr, min):
             time = datetime.datetime(year, month, day, hr, min)
+        else:
+            tk.messagebox.showerror('SimpleMark', 'Date is invalid. Try again')
 
     return time
 
@@ -104,6 +106,15 @@ def datetimeToList(time):
 
     return[year, wordMonth, day, hr, min, hrType]
 
+'''
+Checks if input is valid datetime object
+'''
+def isdate(year, month, day, hr, min):
+    try:
+        datetime.datetime(year, month, day, hr, min)
+        return True
+    except ValueError:
+        return False
 
 '''
 Checks if number is integer
@@ -150,7 +161,7 @@ message: Message to encode
 '''
 def encode(key, message):
     numbers = []
-    numbers.extend(range(0, 65))
+    numbers.extend(range(0, 82))
     letters = list(string.ascii_letters)
     letters.append(' ')
     for i in range(10):
@@ -158,6 +169,22 @@ def encode(key, message):
     letters.append('-')
     letters.append(':')
     letters.append('.')
+    letters.append('~')
+    letters.append('!')
+    letters.append('@')
+    letters.append('#')
+    letters.append('$')
+    letters.append('%')
+    letters.append('^')
+    letters.append('&')
+    letters.append('*')
+    letters.append('(')
+    letters.append(')')
+    letters.append('[')
+    letters.append(']')
+    letters.append('\\')
+    letters.append('/')
+    letters.append('?')
 
     keyLength = len(key)
     output = ''
@@ -174,7 +201,7 @@ def encode(key, message):
                 # gets corresponding key to position in computer
                 specKey = key[i % keyLength]
                 # finds the new number based on key
-                newNumber = (number + specKey) % 65
+                newNumber = (number + specKey) % 82
                 # adds corresponding letter to output
                 output = output + letters[newNumber]
                 findLetter = False
@@ -191,7 +218,7 @@ ciphertext: ciphertext to dcode
 '''
 def decrypt(key, ciphertext):
     numbers = []
-    numbers.extend(range(0, 65))
+    numbers.extend(range(0, 82))
     letters = list(string.ascii_letters)
     letters.append(' ')
     for i in range(10):
@@ -199,6 +226,22 @@ def decrypt(key, ciphertext):
     letters.append('-')
     letters.append(':')
     letters.append('.')
+    letters.append('~')
+    letters.append('!')
+    letters.append('@')
+    letters.append('#')
+    letters.append('$')
+    letters.append('%')
+    letters.append('^')
+    letters.append('&')
+    letters.append('*')
+    letters.append('(')
+    letters.append(')')
+    letters.append('[')
+    letters.append(']')
+    letters.append('\\')
+    letters.append('/')
+    letters.append('?')
 
     output = ''
     #runs for each letter of the ciphertext
@@ -212,7 +255,7 @@ def decrypt(key, ciphertext):
                 number = numbers[x]
                 specKey = key[i]
                 #does the opposite interaction as the encode
-                newNumber = (number - specKey) % 65
+                newNumber = (number - specKey) % 82
 
                 output = output + letters[newNumber]
 
@@ -233,7 +276,7 @@ def keyGen(length):
     number = random.randint(0, 51)
     key.append(number)
     for i in range(length - 1):
-        number = random.randint(0, 64)
+        number = random.randint(0, 81)
         key.append(number)
     return key
 
@@ -245,7 +288,7 @@ stringKey: String value of the key
 '''
 def stringToNumKey(stringKey):
     numbers = []
-    numbers.extend(range(0,65))
+    numbers.extend(range(0,82))
     letters = list(string.ascii_letters)
     letters.append(' ')
     for i in range(10):
@@ -253,6 +296,22 @@ def stringToNumKey(stringKey):
     letters.append('-')
     letters.append(':')
     letters.append('.')
+    letters.append('~')
+    letters.append('!')
+    letters.append('@')
+    letters.append('#')
+    letters.append('$')
+    letters.append('%')
+    letters.append('^')
+    letters.append('&')
+    letters.append('*')
+    letters.append('(')
+    letters.append(')')
+    letters.append('[')
+    letters.append(']')
+    letters.append('\\')
+    letters.append('/')
+    letters.append('?')
 
     key = []
     for i in range(len(stringKey)):
@@ -283,6 +342,22 @@ def numToStringKey(key):
     letters.append('-')
     letters.append(':')
     letters.append('.')
+    letters.append('~')
+    letters.append('!')
+    letters.append('@')
+    letters.append('#')
+    letters.append('$')
+    letters.append('%')
+    letters.append('^')
+    letters.append('&')
+    letters.append('*')
+    letters.append('(')
+    letters.append(')')
+    letters.append('[')
+    letters.append(']')
+    letters.append('\\')
+    letters.append('/')
+    letters.append('?')
     output = ''
     for i in range(len(key)):
         num = key[i]
@@ -304,10 +379,26 @@ def randomstring(length):
     letters.append('-')
     letters.append(':')
     letters.append('.')
+    letters.append('~')
+    letters.append('!')
+    letters.append('@')
+    letters.append('#')
+    letters.append('$')
+    letters.append('%')
+    letters.append('^')
+    letters.append('&')
+    letters.append('*')
+    letters.append('(')
+    letters.append(')')
+    letters.append('[')
+    letters.append(']')
+    letters.append('\\')
+    letters.append('/')
+    letters.append('?')
 
     output = ''
     for i in range(length):
-        number = random.randint(0,64)
+        number = random.randint(0,81)
         output = output + letters[number]
     return output
 
