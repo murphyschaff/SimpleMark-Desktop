@@ -14,7 +14,7 @@ from miscFunctions import *
 
 Created by Murphy Schaff; 2023
 '''
-class App(tk.Tk):
+class SimpleMark(tk.Tk):
 
     def __init__(self):
         tk.Tk.__init__(self)
@@ -32,6 +32,7 @@ class App(tk.Tk):
             if tk.messagebox.askyesno("SimpleMark", "Are you sure you want to exit SimpleMark?"):
                 self.destroy()
                 notifRun = False
+                print('Thanks for using SimpleMark!')
     '''
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     PAGES
@@ -134,7 +135,7 @@ class App(tk.Tk):
         markHrLabel = tk.Label(master=createFrame, text="Hour")
         markMinLabel = tk.Label(master=createFrame, text="Minute")
         markPrioLabel = tk.Label(master=createFrame, text="Priority")
-        markColorLabel = tk.Label(master=createFrame, text="color")
+        #markColorLabel = tk.Label(master=createFrame, text="color")
 
         # creation of text boxes
         listNameBox = tk.Entry(master=createFrame, width=30)
@@ -143,7 +144,7 @@ class App(tk.Tk):
         yearBox = tk.Entry(master=createFrame, width=30)
         hourBox = tk.Entry(master=createFrame, width=30)
         minBox = tk.Entry(master=createFrame, width=30)
-        colorBox = tk.Entry(master=createFrame, width=30)
+        #colorBox = tk.Entry(master=createFrame, width=30)
         # prio option menu
         options = [1, 2, 3, 4, 5]
         prioType = IntVar()
@@ -211,8 +212,8 @@ class App(tk.Tk):
         hrMenu.pack()
         markPrioLabel.pack()
         prioBox.pack()
-        markColorLabel.pack()
-        colorBox.pack()
+        #markColorLabel.pack()
+        #colorBox.pack()
         saveListButton.pack()
         cancelButton.pack()
 
@@ -241,7 +242,7 @@ class App(tk.Tk):
         remindLabel = tk.Label(master=configFrame, text="Time between reminder check (seconds)")
 
         # Entry creation
-        timezoneEntry = tk.Entry(master=configFrame, width=20)
+        timezoneEntry = tk.Entry(master=configFrame, width=40)
         notif1Entry = tk.Entry(master=configFrame, width=10)
         notif2Entry = tk.Entry(master=configFrame, width=10)
         notif3Entry = tk.Entry(master=configFrame, width=10)
@@ -471,7 +472,7 @@ class App(tk.Tk):
         markHrLabel = tk.Label(master=editMarkFrame, text="Hour")
         markMinLabel = tk.Label(master=editMarkFrame, text="Minute")
         prioLabel = tk.Label(master=editMarkFrame, text="Mark Priority")
-        colorLabel = tk.Label(master=editMarkFrame, text="Mark Color")
+        #colorLabel = tk.Label(master=editMarkFrame, text="Mark Color")
 
         # creation of text boxes
         nameBox = tk.Entry(master=editMarkFrame, width=30)
@@ -479,7 +480,7 @@ class App(tk.Tk):
         yearBox = tk.Entry(master=editMarkFrame, width=30)
         hrBox = tk.Entry(master=editMarkFrame, width=30)
         minBox = tk.Entry(master=editMarkFrame, width=30)
-        colorBox = tk.Entry(master=editMarkFrame, width=30)
+        #colorBox = tk.Entry(master=editMarkFrame, width=30)
         # prio option menu
         options = [1, 2, 3, 4, 5]
         prioType = IntVar()
@@ -518,7 +519,7 @@ class App(tk.Tk):
                 yearBox.insert(0, "{}".format(deadlineList[0]))
                 hrBox.insert(0, "{}".format(deadlineList[3]))
                 minBox.insert(0, "{}".format(deadlineList[4]))
-                colorBox.insert(0, "{}".format(color))
+                #colorBox.insert(0, "{}".format(color))
 
                 monthType.set(deadlineList[1])
                 dayType.set(deadlineList[2])
@@ -567,8 +568,8 @@ class App(tk.Tk):
             hrMenu.pack()
             prioLabel.pack()
             prioDrop.pack()
-            colorLabel.pack()
-            colorBox.pack()
+            #colorLabel.pack()
+            #colorBox.pack()
             saveMarkButton.pack()
             cancelMarkEditButton.pack()
         else:
@@ -625,14 +626,14 @@ class App(tk.Tk):
     def addMark(self, mark, list, option, frame, prioType, month, day, hrType, listFrame):
         #finding information from the frame
         objects = frame.winfo_children()
-        #starts at 11
-        name = objects[11].get()
-        details = objects[12].get()
-        year = objects[13].get()
-        hr = objects[14].get()
-        min = objects[15].get()
+        #starts at 10
+        name = objects[10].get()
+        details = objects[11].get()
+        year = objects[12].get()
+        hr = objects[13].get()
+        min = objects[14].get()
         prio = int(prioType.get())
-        color = objects[16].get()
+        color = 'blue'
 
         deadline = createDatetime(year, month, day, hr, min, hrType, configData)
 
@@ -792,14 +793,14 @@ class App(tk.Tk):
     def saveAndOpenList(self,frame, prioType, month, day, hrType):
         # starts at index 13
         objects = frame.winfo_children()
-        listName = objects[13]
-        markName = objects[15]
-        markDetails = objects[14]
-        year = objects[16]
-        hr = objects[17]
-        min = objects[18]
+        listName = objects[12]
+        markName = objects[14]
+        markDetails = objects[13]
+        year = objects[15]
+        hr = objects[16]
+        min = objects[17]
         markPrio = int(prioType.get())
-        markColor = objects[19]
+        markColor = 'blue'
 
         listName = listName.get()
         markName = markName.get()
@@ -807,9 +808,8 @@ class App(tk.Tk):
         year = year.get()
         hr = hr.get()
         min = min.get()
-        markColor = markColor.get()
 
-        if listName == '' or markName == '' or markDetails == '' or year == '' or hr == '' or min == '' or markColor == '':
+        if listName == '' or markName == '' or markDetails == '' or year == '' or hr == '' or min == '':
             tk.messagebox.showerror(title="SimpleMark", message="Please enter all information")
         else:
             exists = checkFile(listName)
@@ -888,7 +888,7 @@ if configData != None:
     # creates window and residual parts of the window itself
     global notifRun
     notifRun = True
-    App().mainloop()
+    SimpleMark().mainloop()
 
 
 else:

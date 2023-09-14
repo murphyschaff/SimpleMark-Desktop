@@ -230,10 +230,10 @@ length: Int value of the length of the key
 '''
 def keyGen(length):
     key = []
-    for i in range(length):
+    number = random.randint(0, 51)
+    key.append(number)
+    for i in range(length - 1):
         number = random.randint(0, 64)
-        if i == 0 and number == 52:
-            number = number + 1
         key.append(number)
     return key
 

@@ -238,11 +238,19 @@ def openConfig():
         config = open(directory, 'r')
 
         #Time Zone
-        timeRegex = re.compile(r'TimeZone: (\S+)')
-        line = config.readline()
-        timeZone = timeRegex.search(line)
-
-        data[0] = timeZone.group(1)
+        timeLine = config.readline()
+        findSpace = True
+        i = 0
+        while findSpace:
+            if timeLine[i] == ' ':
+                remainderLine = i + 1
+                findSpace = False
+            else:
+                i = i + 1
+        time = ''
+        for x in range(remainderLine, len(timeLine) -1):
+            time = time + timeLine[x]
+        data[0] = time
 
         #previous list
         listRegex = re.compile(r'Previous List: (.*)')
