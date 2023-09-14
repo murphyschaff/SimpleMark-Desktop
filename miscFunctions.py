@@ -30,9 +30,9 @@ def createDatetime(year, monthTxt, day, hr, min, hrType, configData):
     #Basic Value checking
     if not isint(year):
         tk.messagebox.showerror(title="SimpleMark", message="Please enter a valid year value")
-    elif not isint(hr) and 0 < hr < 13:
+    elif not isint(hr) or int(hr) > 12 or int(hr) < 1:
         tk.messagebox.showerror(title="SimpleMark", message="Please enter a valid hour value")
-    elif not isint(min) and 0 < min < 60:
+    elif not isint(min) or int(min) > 59 or int(min) < 0:
         tk.messagebox.showerror(title="SimpleMark", message="Please enter a valid minute value")
     else:
         year = int(year)
@@ -40,16 +40,6 @@ def createDatetime(year, monthTxt, day, hr, min, hrType, configData):
         min = int(min)
         makeTime = True
         # Checking to see if months and dates match up
-        if month == 2:
-            if day > 29:
-                tk.messagebox.showerror(title="SimpleMark", message="{} does not have {} days. Try again"
-                                        .format(monthTxt, day))
-                makeTime = False
-        elif month == 4 or month == 6 or month == 9 or month == 11:
-            if day > 30:
-                tk.messagebox.showerror(title="SimpleMark", message="{} does not have {} days. Try again"
-                                        .format(monthTxt, day))
-                makeTime = False
         #adds to the hour if PM is selected
         if hrType == "PM":
             hr = hr + 12
@@ -161,7 +151,7 @@ message: Message to encode
 '''
 def encode(key, message):
     numbers = []
-    numbers.extend(range(0, 82))
+    numbers.extend(range(0, 84))
     letters = list(string.ascii_letters)
     letters.append(' ')
     for i in range(10):
@@ -185,6 +175,8 @@ def encode(key, message):
     letters.append('\\')
     letters.append('/')
     letters.append('?')
+    letters.append('}')
+    letters.append('{')
 
     keyLength = len(key)
     output = ''
@@ -201,7 +193,7 @@ def encode(key, message):
                 # gets corresponding key to position in computer
                 specKey = key[i % keyLength]
                 # finds the new number based on key
-                newNumber = (number + specKey) % 82
+                newNumber = (number + specKey) % 84
                 # adds corresponding letter to output
                 output = output + letters[newNumber]
                 findLetter = False
@@ -218,7 +210,7 @@ ciphertext: ciphertext to dcode
 '''
 def decrypt(key, ciphertext):
     numbers = []
-    numbers.extend(range(0, 82))
+    numbers.extend(range(0, 84))
     letters = list(string.ascii_letters)
     letters.append(' ')
     for i in range(10):
@@ -242,6 +234,8 @@ def decrypt(key, ciphertext):
     letters.append('\\')
     letters.append('/')
     letters.append('?')
+    letters.append('}')
+    letters.append('{')
 
     output = ''
     #runs for each letter of the ciphertext
@@ -255,7 +249,7 @@ def decrypt(key, ciphertext):
                 number = numbers[x]
                 specKey = key[i]
                 #does the opposite interaction as the encode
-                newNumber = (number - specKey) % 82
+                newNumber = (number - specKey) % 84
 
                 output = output + letters[newNumber]
 
@@ -276,7 +270,7 @@ def keyGen(length):
     number = random.randint(0, 51)
     key.append(number)
     for i in range(length - 1):
-        number = random.randint(0, 81)
+        number = random.randint(0, 82)
         key.append(number)
     return key
 
@@ -288,7 +282,7 @@ stringKey: String value of the key
 '''
 def stringToNumKey(stringKey):
     numbers = []
-    numbers.extend(range(0,82))
+    numbers.extend(range(0,84))
     letters = list(string.ascii_letters)
     letters.append(' ')
     for i in range(10):
@@ -312,6 +306,8 @@ def stringToNumKey(stringKey):
     letters.append('\\')
     letters.append('/')
     letters.append('?')
+    letters.append('}')
+    letters.append('{')
 
     key = []
     for i in range(len(stringKey)):
@@ -358,6 +354,8 @@ def numToStringKey(key):
     letters.append('\\')
     letters.append('/')
     letters.append('?')
+    letters.append('}')
+    letters.append('{')
     output = ''
     for i in range(len(key)):
         num = key[i]
@@ -395,10 +393,12 @@ def randomstring(length):
     letters.append('\\')
     letters.append('/')
     letters.append('?')
+    letters.append('}')
+    letters.append('{')
 
     output = ''
     for i in range(length):
-        number = random.randint(0,81)
+        number = random.randint(0,82)
         output = output + letters[number]
     return output
 
@@ -495,8 +495,11 @@ def checkFile(name):
             watermark = check.readline()
             watermark = watermark.strip()
             if watermark == "SimpleMarkListType":
+                check.readline()
                 listName = check.readline()
                 listName = listName.strip()
+                print('{} {}'.format(listName, name))
                 if listName == name:
                     exists = True
+            check.close()
     return exists

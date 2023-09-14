@@ -139,8 +139,8 @@ class SimpleMark(tk.Tk):
 
         # creation of text boxes
         listNameBox = tk.Entry(master=createFrame, width=30)
-        descriptionBox = tk.Entry(master=createFrame, width=30)
         nameBox = tk.Entry(master=createFrame, width=30)
+        descriptionBox = tk.Entry(master=createFrame, width=30)
         yearBox = tk.Entry(master=createFrame, width=30)
         hourBox = tk.Entry(master=createFrame, width=30)
         minBox = tk.Entry(master=createFrame, width=30)
@@ -442,12 +442,19 @@ class SimpleMark(tk.Tk):
         showFrame = False
         mark = None
 
+        check1option = "SimpleMark List: {}; Add Mark".format(list.getName())
+        check2option = 'SimpleMark List: {}; Edit Mark'.format(list.getName())
+        currentTitle = self.wm_title()
+
         # 0:add new mark, 1==edit existing mark
         if option == 0:
-            changeType = "Add"
-            showFrame = True
-            newTitle = "SimpleMark List: {}; {} Mark".format(list.getName(), changeType)
-            self.title(newTitle)
+            if currentTitle == check1option or currentTitle == check2option:
+                showFrame = False
+            else:
+                changeType = "Add"
+                showFrame = True
+                newTitle = "SimpleMark List: {}; {} Mark".format(list.getName(), changeType)
+                self.title(newTitle)
         else:
             changeType = 'Edit'
             mark = list.findMark(searchMarkName)
@@ -458,9 +465,12 @@ class SimpleMark(tk.Tk):
                 deadline = mark.getDeadline()
                 color = mark.getColor()
                 buttonText = 'Save Changes'
-                showFrame = True
-                newTitle = "SimpleMark List: {}; {} Mark".format(list.getName(), changeType)
-                self.title(newTitle)
+                if currentTitle == check1option or currentTitle == check2option:
+                    showFrame = False
+                else:
+                    showFrame = True
+                    newTitle = "SimpleMark List: {}; {} Mark".format(list.getName(), changeType)
+                    self.title(newTitle)
             else:
                 if searchMarkName == '':
                     tk.messagebox.showerror(title="SimpleMark", message="Please enter the name of a mark to edit")
@@ -838,8 +848,8 @@ class SimpleMark(tk.Tk):
         # starts at index 13
         objects = frame.winfo_children()
         listName = objects[12]
-        markName = objects[14]
-        markDetails = objects[13]
+        markName = objects[13]
+        markDetails = objects[14]
         year = objects[15]
         hr = objects[16]
         min = objects[17]
@@ -857,6 +867,7 @@ class SimpleMark(tk.Tk):
             tk.messagebox.showerror(title="SimpleMark", message="Please enter all information")
         else:
             exists = checkFile(listName)
+            #print(exists)
             if exists:
                 tk.messagebox.showerror(title="SimpleMark", message="Name '{}' already used in list.".format(listName))
             else:
