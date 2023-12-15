@@ -182,12 +182,12 @@ def openList(path):
                 colork = colork.strip()
 
                 # finding lengths
-                namel = hextoint(decrypt(stringToNumKey(namek[0:3]), name[0:3]))
-                detailsl = hextoint(decrypt(stringToNumKey(detailsk[0:3]), details[0:3]))
-                deadlinel = hextoint(decrypt(stringToNumKey(deadlinek[0:3]), deadline[0:3]))
+                namel, namek, name = getEncodedLength(namek, name)
+                detailsl, detailsk, details = getEncodedLength(detailsk, details)
+                deadlinel, deadlinek, deadline = getEncodedLength(deadlinek, deadline)
                 #print('{} {}'.format(stringToNumKey(priok[0:3]),decrypt(stringToNumKey(priok[0:3]), prio[0:3]) ))
-                priol = hextoint(decrypt(stringToNumKey(priok[0:3]), prio[0:3]))
-                colorl = hextoint(decrypt(stringToNumKey(colork[0:3]), color[0:3]))
+                priol, priok, prio = getEncodedLength(priok, prio)
+                colorl, colork, color = getEncodedLength(colork, color)
 
                 # finding true values of each line
                 name = findString(name, namel)
