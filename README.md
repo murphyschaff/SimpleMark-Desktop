@@ -10,7 +10,7 @@ What: A Python based Reminders applicaiton for Windows Desktop.
 Requirements:
 - Windows 10 or newer
 - Python3.10 or newer with windowstoast installed
-
+Link to Windows Toast Source: [https://github.com/DatGuy1/Windows-Toasts](https://github.com/DatGuy1/Windows-Toasts)
 
 How to Install:
 - Make sure Python3 is installed with windowstoast
